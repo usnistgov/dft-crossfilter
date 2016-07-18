@@ -24,6 +24,7 @@ the database file and mongod only takes absolutepaths.
     $ cd dft-crossfilter/benchmark-db
     $ python setup.py install
     $ mkdir data
+    $ conda install mongodb
     $ pwd -> get absolute path to data folder
     $ python dbhandle.py --run --dbpath absolute_path_to/dft-crossfilter/benchmark-db/data
 
