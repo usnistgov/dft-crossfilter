@@ -3,7 +3,7 @@ DFT-CROSSFILTER
 </strong></sup></p>
 The Dft-Crossfiltering is a web platform that provides crossfiltering capabilities to users.
 The aim of this platform is to support a dft benchmark data exposed to collaborators.
-* **[INSTALL](INSTALLATION.md)** – installation instructions.
+* **[SETUP](SETUP.md)** – setup instructions.
 * **[LICENSE](LICENSE)** – the license.
 
 # The platform components
