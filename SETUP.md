@@ -23,7 +23,8 @@ the database file and mongod only takes absolutepaths.
     $ source activate dft-crossfilter
     $ cd dft-crossfilter/benchmark-db
     $ python setup.py install
-    $ pwd -> get absolute path to data folter
+    $ mkdir data
+    $ pwd -> get absolute path to data folder
     $ python dbhandle.py --run --dbpath absolute_path_to/dft-crossfilter/benchmark-db/data
 
 At this point you should have a mongodb instance running.
