@@ -33,7 +33,7 @@ At this point you should have a mongodb instance running.
 ## The api setup
 
 After starting the database, we now need to install the api dependencies.
-Then run it. After doing so, go to: http://0.0.0.0:7000/bench/push/csv
+Then run it.
 
     $ source activate dft-crossfilter
     $ cd dtf-crossfilter/benchmark-api
