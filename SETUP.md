@@ -50,7 +50,8 @@ This will push this dft data set into the mongodb database 'benchmark-production
 
 At this point you are set for the data access part. For the visualizatio part
 you will have to build this modified bokeh snapshot. You will need to have gulp
-installed. When asked, selected the full install.
+installed. When asked, selected the full install with the option 1):
+1) build and install fresh BokehJS
 
     $ source activate dft-crossfilter
     $ cd dtf-crossfilter/bokeh/bokehjs/
@@ -60,7 +61,7 @@ installed. When asked, selected the full install.
     $ sudo gulp build
     $ sudo npm install
     $ cd ..
-    $ python setup install
+    $ python setup.py install
     $ cd ..
 
 Now that we have bokeh built with the crossfilter module we can now run our
