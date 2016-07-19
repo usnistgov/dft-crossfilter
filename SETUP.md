@@ -22,6 +22,7 @@ the database file and mongod only takes absolutepaths.
 
     $ source activate dft-crossfilter
     $ cd dft-crossfilter/benchmark-db
+    $ pip install -r requirements.txt
     $ python setup.py install
     $ mkdir data
     $ conda install mongodb
