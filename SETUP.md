@@ -61,7 +61,7 @@ installed. When asked, select the full install with the option:
     $ sudo gulp build
     $ sudo npm install
     $ cd ..
-    $ python setup.py install
+    $ sudo python setup.py install --build_js
     $ cd ..
 If an error occurs we recommand you removing bokehjs/nodes_modules and bokehjs/build.
 Now that we have bokeh built with the crossfilter module we can now run our
