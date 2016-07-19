@@ -55,8 +55,8 @@ installed. When asked, selected the full install.
     $ source activate dft-crossfilter
     $ cd dtf-crossfilter/bokeh/bokehjs/
     $ conda install -c bokeh nodejs
-    $ apt-get install npm node
-    $ apt-get install nodejs-legacy
+    $ sudo apt-get install npm node
+    $ sudo apt-get install nodejs-legacy
     $ sudo gulp build
     $ sudo npm install
     $ cd ..
