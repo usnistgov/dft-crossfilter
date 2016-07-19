@@ -55,7 +55,7 @@ installed. When asked, select the full install with the option:
 
     $ source activate dft-crossfilter
     $ cd dtf-crossfilter/bokeh/bokehjs/
-    $ conda install -c bokeh nodejs
+    $ conda install -c nodejs
     $ sudo apt-get install npm node
     $ sudo apt-get install nodejs-legacy
     $ sudo gulp build
@@ -63,7 +63,7 @@ installed. When asked, select the full install with the option:
     $ cd ..
     $ python setup.py install
     $ cd ..
-
+If an error occurs we recommand you removing bokehjs/nodes_modules and bokehjs/build.
 Now that we have bokeh built with the crossfilter module we can now run our
 bokeh visualization server:
 
