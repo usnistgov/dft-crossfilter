@@ -9,9 +9,9 @@ from benchmark.loader import load
 @bokeh_app.route("/bokeh/benchmark/")
 @object_page("benchmark")
 def make_crossfilter():
-	"""The root crossfilter controller"""
-	# Loading the dft data head as a 
-	# pandas dataframe
+    """The root crossfilter controller"""
+    # Loading the dft data head as a 
+    # pandas dataframe
     autompg = load("francesca_data_head")
     app = CrossFilter.create(df=autompg)
     return app
