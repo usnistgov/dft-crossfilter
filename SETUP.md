@@ -50,7 +50,7 @@ This will push this dft data set into the mongodb database 'benchmark-production
 
 At this point you are set for the data access part. For the visualizatio part
 you will have to build this modified bokeh snapshot. You will need to have gulp
-installed. When asked, selected the full install with the option 1):
+installed. When asked, select the full install with the option:
 1) build and install fresh BokehJS
 
     $ source activate dft-crossfilter
