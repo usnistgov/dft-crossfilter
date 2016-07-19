@@ -1,7 +1,7 @@
 # Setting up dft-crossfilter
 
 To setup this platform we recommend installing an environment management
-system. For this purpose we installed anaconda. Then create and load an
+system. For this purpose we installed [anaconda](https://www.continuum.io/downloads). Then create and load an
 environment where we will install all the paltform dependencies.
 
     $ conda create -n dft-crossfilter python=2.7 anaconda
