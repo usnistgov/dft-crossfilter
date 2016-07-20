@@ -24,10 +24,12 @@ the database file and mongod only takes absolutepaths.
     $ cd dft-crossfilter/benchmark-db
     $ pip install -r requirements.txt
     $ python setup.py install
-    $ mkdir data
-    $ conda install mongodb
-    $ pwd -> get absolute path to data folder
-    $ python dbhandle.py --run --dbpath absolute_path_to/dft-crossfilter/benchmark-db/data
+
+Go to [Mongodb](https://docs.mongodb.com/manual/installation/) and install
+it on your system. Then start it. In ubuntu you can do so by typing:
+
+    $ sudo service mongod start
+
 
 At this point you should have a mongodb instance running.
 
