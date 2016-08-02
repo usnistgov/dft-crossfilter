@@ -61,7 +61,8 @@ installed. When asked, select the full install with the option:
     $ conda install nodejs==4.4.1
     $ sudo apt-get install npm node
     $ sudo apt-get install nodejs-legacy
-    $ sudo npm install -g gulp
+    $ sudo npm uninstall -g gulp
+    $ sudo npm install -g gulp@3.9.1
     $ sudo gulp build
     $ sudo npm install
     $ cd ..
