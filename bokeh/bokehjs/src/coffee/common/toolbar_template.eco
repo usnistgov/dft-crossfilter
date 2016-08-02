@@ -1,0 +1,11 @@
+<div class='bk-button-bar'>
+  <ul class='bk-button-bar-list' type="pan" />
+  <ul class='bk-button-bar-list' type="scroll" />
+  <ul class='bk-button-bar-list' type="pinch" />
+  <ul class='bk-button-bar-list' type="tap" />
+  <ul class='bk-button-bar-list' type="press" />
+  <ul class='bk-button-bar-list' type="rotate" />
+  <ul class='bk-button-bar-list' type="actions" />
+  <div class='bk-button-bar-list bk-bs-dropdown' type="inspectors" />
+  <ul class='bk-button-bar-list' type="help" />
+</div>
