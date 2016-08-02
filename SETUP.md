@@ -47,6 +47,7 @@ In a browser go to [API data entry](http://0.0.0.0:7000/bench/push/csv).
 This is the api frontend for uploading the dft data. Click on 'Choose File'
 and navigate to: dft-crossfilter/benchmark/data/francesca_data_full.csv.
 This will push this dft data set into the mongodb database 'benchmark-production'.
+To test it out go to [Data description dictionnary](http://0.0.0.0:7000/bench/desc/all).
 
 ## bokeh setup
 
@@ -57,7 +58,7 @@ installed. When asked, select the full install with the option:
 
     $ source activate dft-crossfilter
     $ cd dtf-crossfilter/bokeh/bokehjs/
-    $ conda install -c nodejs
+    $ conda install nodejs==4.4.1
     $ sudo apt-get install npm node
     $ sudo apt-get install nodejs-legacy
     $ sudo gulp build
