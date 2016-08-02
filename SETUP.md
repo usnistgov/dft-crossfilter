@@ -63,6 +63,7 @@ installed. When asked, select the full install with the option:
     $ sudo apt-get install nodejs-legacy
     $ sudo npm uninstall -g gulp
     $ sudo npm install -g gulp@3.9.1
+    $ sudo npm install
     $ sudo gulp build
     $ sudo npm install
     $ cd ..
