@@ -27,51 +27,93 @@ def home_reference_evaluate_data():
         if fk.request.files:
             file_obj = fk.request.files['file']
             file_name = file_obj.filename
+            dataObject = StringIO()
+
+            head = RowModel.objects(index='0').first()
+
             with open('/tmp/{0}'.format(file_name), 'w') as tmp_csv:
                 content = file_obj.read()
                 tmp_csv.write(content)
+
+            print "New file witten to tmp..."
+
             data = pd.read_csv('/tmp/{0}'.format(file_name))
-            columns = data.columns
-            for c in columns:
-                _desc = data[c].describe()
-                desc = DescModel.objects(column=c).first()
-                if desc:
-                    return api_response(401, 'update failed for this column', 'This column already exist.')
-                else:
-                    desc = DescModel(column=c)
-                    col = ColModel(column=c)
-                    col.values = data[c].tolist()
-                    col.save()
-                    description = {}
-                    description['count'] = _desc['count']
-                    description['dtype'] = str(_desc.dtype)
-                    if description['dtype'] == 'float64':
-                        description['mean'] = _desc['mean']
-                        description['std'] = _desc['std']
-                        description['min'] = _desc['min']
-                        description['max'] = _desc['max']
-                        description['25%'] = _desc['min']
-                        description['50%'] = _desc['min']
-                        description['75%'] = _desc['min']
-                        description['histogram'] = data[c]
-                    elif description['dtype'] == 'object':
-                        description['unique'] = _desc['unique']
-                        description['top'] = _desc['top']
-                        description['freq'] = _desc['freq']
-                        description['options'] = data[c].unique().tolist()
-                    elif description['dtype'] == 'datetime64':
-                        description['unique'] = _desc['unique']
-                        description['options'] = data[c].unique().tolist()
-                        description['first'] = _desc['first']
-                        description['last'] = _desc['last']
-                    desc.df = description
-                    desc.save()
+
+            if head == None:
+                head = RowModel(index='0')
+                head.value = [ col for col in data.columns]
+                head.save()
+
+            print "Head section loaded..."
+            header = ','.join(head.value)
+            print '%s\n'%header
+
+            previous_index = len(RowModel.objects())
+
             for index, row in data.iterrows():
                 values = []
-                for c in columns:
+                for c in head.value:
                     values.append(row[c])
-                rw = RowModel(index=str(index), value=values)
+                rw = RowModel(index=str(previous_index+index), value=values)
                 rw.save()
+
+            print "New data appended to old data..."
+
+           
+            dataObject.write('%s\n'%header)
+
+            print "Head written to dataframe..."
+
+            for row in RowModel.objects():
+                if int(row.index) > 0:
+                    oneline = ','.join([str(v) for v in row.value])
+                    dataObject.write('%s\n'%oneline)
+
+            print "New merged content written to dataframe..."
+
+            dataObject.seek(0)
+            data_merged = pd.read_csv(dataObject)
+
+            for desc in DescModel.objects():
+                desc.delete()
+
+            for col in ColModel.objects():
+                col.delete()
+
+            print "Previous decription and columns deleted..."
+
+            for c in head.value:
+                _desc = data_merged[c].describe()
+                desc = DescModel(column=c)
+                col = ColModel(column=c)
+
+                col.values = data_merged[c].tolist()
+                col.save()
+                description = {}
+                description['count'] = _desc['count']
+                description['dtype'] = str(_desc.dtype)
+                if description['dtype'] == 'float64':
+                    description['mean'] = _desc['mean']
+                    description['std'] = _desc['std']
+                    description['min'] = _desc['min']
+                    description['max'] = _desc['max']
+                    description['25%'] = _desc['min']
+                    description['50%'] = _desc['min']
+                    description['75%'] = _desc['min']
+                    description['histogram'] = data[c]
+                elif description['dtype'] == 'object':
+                    description['unique'] = _desc['unique']
+                    description['top'] = _desc['top']
+                    description['freq'] = _desc['freq']
+                    description['options'] = data_merged[c].unique().tolist()
+                elif description['dtype'] == 'datetime64':
+                    description['unique'] = _desc['unique']
+                    description['options'] = data_merged[c].unique().tolist()
+                    description['first'] = _desc['first']
+                    description['last'] = _desc['last']
+                desc.df = description
+                desc.save()
+            print "New description and columns added..."
             return api_response(200, 'Push succeed', 'Your file was pushed.')
         else:
             return api_response(204, 'Nothing created', 'You must a set file.')

@@ -1,4 +1,3 @@
-# The api module
 import flask as fk
 from benchdb.common.core import setup_app
 from benchdb.common.models import RowModel
