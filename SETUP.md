@@ -28,7 +28,7 @@ the database file and mongod only takes absolutepaths.
 Go to [Mongodb](https://docs.mongodb.com/manual/installation/) and install
 it on your system. Then start it. In ubuntu you can do so by typing:
 
-    $ sudo service mongod start
+    $ sudo service mongodb start
 
 
 At this point you should have a mongodb instance running.
