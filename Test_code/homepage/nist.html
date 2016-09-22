@@ -1,0 +1,37 @@
+{% load staticfiles %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>NIST</title>
+    <link rel="icon" href="{% static 'Black_Icon.png' %}" sizes="16x16">
+    <link rel="stylesheet" type="text/css" href="{% static 'queries/dbstyle.css' %}" />
+    <link rel="stylesheet" href="{% static 'queries/sortable-theme-dark.css' %}" />
+    <link href='https://fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
+    <script src="{% static "bokeh-0.12.2.min.js" %}"></script>
+    <link rel="stylesheet" href="{% static "queries/bokeh-0.12.2.min.css" %}">
+</head>
+
+<body>
+
+    <div id="HomePageHeaderBox">
+        <a href="/">
+            <img src="{% static "Icon.png" %}" style="display: inline; width: 90; height: 100; position: relative; top: 10px; left: 50px;"/>
+        </a>
+        <h1 id="HomePageHeader">NIST data</h1>
+        <div id="Menu">
+            <a class="MenuLink" href="/">Home</a>
+            <a class="MenuLink" href="/about">About</a>
+            <a class="MenuLink" href="/docs">Docs</a>
+            <a class="MenuLink" href="/contact">Contact</a>
+        </div>
+    </div>
+
+    <p style="font-size:40; position: relative; left: 50px; top: 0px">
+    Coming Soon Data Analytics
+    </p>
+
+    {{ the_div|safe }}
+
+    {{ the_script|safe }}
+
+</body>
