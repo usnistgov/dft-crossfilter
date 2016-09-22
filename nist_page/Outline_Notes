@@ -1,0 +1,18 @@
+Development for the nist analysis home page whihch will contain: 
+ Header
+ - welcome (any content about the project, why we are doing this?) 
+ - nav bar to other pages (contact: contributors, gallery of example analysis of data) 
+ Side
+ - side content links to mpinterfaces paper, 2dmaterials.org, 2dmaterials arxiv paper?, etc. 
+ Body 
+ - query form to access the data that interacts with the benchmark-api
+ - (optional) perioidic table interactive selection 
+ Body end: -  Drop down list or radio list to choose from 2-3 analysis tools
+           -  Analyze button that selects tool and launches Shiny app 
+ Footer    - copyrights, powered by, etc. 
+
+ 
+NOTE: 1.  js, css, static files are all placed in the directory ../static
+      2.  Demo data to serve as sub back up csv set in case API fails (we will aim to connect the two) 
+      3.  forms.py : CENTRAL COMMAND for the api query interface to rendering the html response to launching the Shiny Analysis app 
+      4.  ShinyApps : Analysis R tools 
