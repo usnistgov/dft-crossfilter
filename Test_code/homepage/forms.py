@@ -6,10 +6,6 @@ import os
 from pymongo import MongoClient
 
 ### check necessity of this 
-if DEBUG:
-    host = '10.5.46.101'
-else:
-    host = 'localhost'
 
 
 class SelectNISTdata(Form):
