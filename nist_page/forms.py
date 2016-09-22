@@ -1,15 +1,10 @@
 from wtforms import Form, BooleanField, StringField, validators, \
-ListWidget
+from wtforms.widgets import ListWidget
 import requests
 import os
 
 from pymongo import MongoClient
 
-### check necessity of this 
-if DEBUG:
-    host = '10.5.46.101'
-else:
-    host = 'localhost'
 
 
 class SelectNISTdata(Form):
