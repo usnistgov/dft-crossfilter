@@ -44,8 +44,8 @@
             <h5><a href="2Dmaterialsweb.org">2Dmaterials database</h5>
           </div>
           <div class="sidebar_item">
-            <h4>MGI DFT Benchmarking</h4>
-            <h5><a href="https://mgi.nist.gov/dft-benchmarking">2Dmaterials database</h5>
+            <h4>MGI NIST website</h4>
+            <h5><a href="2Dmaterialsweb.org">2Dmaterials database</h5>
           </div>
         </div>
       </div> 
@@ -60,20 +60,21 @@
           <h4>Data Selection Portal</h4>
           <p>PLACEHOLDER: This is where the intearactive form will appear</p>
           <p>
-            PLACEHOLDER: This is where interactive form should appear
+            PLACEHOLDER: This is where the tabular output of dataframe of the query will appear
           </p>
           <h2>Tables</h2>
-          <p>Selected Form data is:</p>
+          <p>Tabluar result of the query to the API/database/csv will be shown here:</p>
           <table style="width:100%; border-spacing:0;">
-            <tr><th>Element</th><th>Code</th><th>Bulk Property</th></tr>
-            <tr><td>Cu</td><td>VASP</td><td>Bulk Modulus</td></tr>
-            <tr><td>Al</td><td>VASP</td><td>Bulk Modulus</td></tr>
-            <tr><td>W</td><td>VASP</td><td>Lattice Constant</td></tr>
-            <tr><td>Ni</td><td>VASP<td>Bulk Modulus</td></tr>
+            <tr><th>Item</th><th>Description</th></tr>
+            <tr><td>Item 1</td><td>Description of Item 1</td></tr>
+            <tr><td>Item 2</td><td>Description of Item 2</td></tr>
+            <tr><td>Item 3</td><td>Description of Item 3</td></tr>
+            <tr><td>Item 4</td><td>Description of Item 4</td></tr>
           </table>
           <h2>Form Elements</h2>
           <form action="#" method="post">
             <div class="form_settings">
+              <p><span>Choose analysis tool for the data</span><input type="text" name="name" value="" /></p>
               <p><span>Choose Analysis tool</span><select id="id" name="name"><option value="1">Regression</option><option value="2">K means Clustering</option><option value="3">Visualize 3D Contour</select></p>
               <p>PLACEHOLDER: The button here will launch the Shiny app based on the selection by the user, need to figure out how it will select based on the selection chosen in form settings 
               <p style="padding-top: 15px"><span>&nbsp;</span><input class="submit" type="submit" name="name" value="button" /></p>
