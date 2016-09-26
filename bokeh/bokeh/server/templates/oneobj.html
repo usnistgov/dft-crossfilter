@@ -27,7 +27,20 @@
 {% block content %}
 
 <div class="col-md-12">
-  <div class="navbar navbar-default"><div class="navbar-header"><a class="navbar-brand">DFT Benchmark</a></div></div>
+<center>
+    <div class="row">
+      <img src="{{ url_for('static', filename='img/MGI.png') }}"/>
+      <img src="{{ url_for('static', filename='img/NIST.png') }}"/>
+    </div>
+  </center>
+  <div class="navbar navbar-default">
+    <div class="navbar-header">
+      <a class="navbar-brand">DFT Benchmark</a>
+  </div>
+    </div>
+  </div>
+  <br/>
+  <br/>
   <!-- <a href="{{ request.url }}">link to this </a> -->
   <div id="PlotPane"></div>
 </div>
