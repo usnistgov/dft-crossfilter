@@ -1,13 +1,15 @@
 What we want to do in this branch:
-  "create a flask app independent of bokeh server that runs on Apache and can render an Iframe from Shiny R"
+
+  "create a flask app using the new bokeh server that runs on Apache and can render an Iframe from Shiny R"
+  
     - which uses bokeh's crossfilter model classes (that makes use of pandas dataframe tools)
       to crossfilter data
-    - the flask app server will interact directly with the REST api of benchmark-db
-    - use python for
-    - use Shiny R to create html that can be Iframed into python served flask app for the data analysis.
-    - this flask app can be wrapped around with an Apache or Nginx server.
+    - use the new bokeh server to interact directly with the REST api of benchmark-db
+    - use Shiny R to create html that can be Iframed into python served bokeh app for the data analysis.
+    - this bokeh app can be wrapped around with an Apache or Nginx server.
 
-  User interface goals
+
+  ** User interface goals
     - User sees at /home.html a website that looks like https://materialsweb.org/nist_page
       - the webpage itself can have a periodic table type interactive interface or a library website like
         form with drop down lists or text entry elements
