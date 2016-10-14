@@ -9,8 +9,10 @@ What we want to do in this branch:
     - use Shiny R to create html that can be Iframed into python served flask app for the data analysis.
     - this flask app can be wrapped around with an Apache or Nginx server.
 
-  User interface goals
-    - User sees at /home.html a website that looks like https://materialsweb.org/nist_page
+
+  * User interface goals
+  
+     - User sees at /home.html a website that looks like https://materialsweb.org/nist_page
      - the webpage itself can have a periodic table type interactive interface or a library website like
         form with drop down lists or text entry elements
      - for now the UI can directly be the crossfilter UI of click and drag
