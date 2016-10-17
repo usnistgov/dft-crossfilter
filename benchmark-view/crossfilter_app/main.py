@@ -10,7 +10,7 @@ from bokeh.palettes import RdYlBu3
 from bokeh.plotting import figure, curdoc
 
 
-#### CROSSFILTER PART ##### >>> Module load errors throwing up how to do a relative import ? 
+#### CROSSFILTER PART ##### >>> Module load errors throwing up how to do a relative import ?
 # from .crossview.crossfilter.models import CrossFilter
 
 #### DATA INPUT FROM REST API ######
@@ -19,7 +19,7 @@ from bokeh.plotting import figure, curdoc
 #### DATA INPUT STRAIGHT FROM PANDAS for test purposes ####
 import pandas as pd
 
-##### PLOTTING PART ########
+##### PLOTTING PART -- GLOBAL FIGURE CREATION ########
 # create a plot and style its properties
 
 p = figure(x_range=(0, 100), y_range=(0, 100), toolbar_location=None)
@@ -61,6 +61,8 @@ def callback():
 #@bokeh_app.route("/bokeh/benchmark/")
 #@object_page("benchmark")
 
+#### RENDERERS OF WIDGETS #####
+
 def make_crossfilter():
     """The root crossfilter controller"""
     # Loading the dft data head as a
@@ -88,7 +90,7 @@ def make_crossfilter():
     # finally assign to ds.data
     ds.data = new_data
 
-
+#### WIDGET CREATIONS ####
 
 # add a button widget and configure with the call back
 button_basic = Button(label="Press Me")
