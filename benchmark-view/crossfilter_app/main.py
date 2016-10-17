@@ -28,6 +28,9 @@ p = figure(x_range=(0, 100), y_range=(0, 100), toolbar_location=None)
 p.outline_line_color = None
 p.grid.grid_line_color = None
 
+
+#### FORMAT OF DATA SENT TO WIDGET #######
+
 # add a text renderer to out plot (no data yet)
 r = p.text(x=[], y=[], text=[], text_color=[], text_font_size="20pt",
            text_baseline="middle", text_align="center")
@@ -35,6 +38,8 @@ r = p.text(x=[], y=[], text=[], text_color=[], text_font_size="20pt",
 i = 0
 
 ds = r.data_source
+
+##### WIDGET RESPONSES IN THE FORM OF CALLBACKS ######
 
 # create a callback that will add a number in a random location
 def callback():
