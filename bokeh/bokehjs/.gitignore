@@ -1,8 +1,0 @@
-/build
-*~
-*.sw[opn]
-*.bak
-*#*
-*.#*
-*.DS_Store
-npm-debug.log
