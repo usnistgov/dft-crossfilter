@@ -16,7 +16,7 @@ from .plugins import CrossScatterPlugin, CrossBarPlugin, CrossLinePlugin
 
 # bokeh plotting functions
 from bokeh.model import Model
-from bokeh.properties import Dict, Enum, Instance, List, String, Any, Int
+from bokeh.core.properties import Dict, Enum, Instance, List, String, Any, Int
 
 logger = logging.getLogger(__name__)
 
