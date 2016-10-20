@@ -8,7 +8,7 @@ environment where we will install all the paltform dependencies.
 
 We recommand that you have three terminal windows to run these following
 sections. Each will producing a trace in the terminal that you might want
-to look into. All three of them are servers and will not return the 
+to look into. All three of them are servers and will not return the
 terminal input unless you detach them with '&'.  Every section commands
 should be run after activating the environment we just created.
 
@@ -43,7 +43,7 @@ Then run it.
     $ pip install -r requirements.txt
     $ python run.py --host 0.0.0.0 --port 7000
 
-In a browser go to [API data entry](http://0.0.0.0:7000/bench/push/csv). 
+In a browser go to [API data entry](http://0.0.0.0:7000/bench/push/csv).
 This is the api frontend for uploading the dft data. Click on 'Choose File'
 and navigate to: dft-crossfilter/benchmark/data/francesca_data_full.csv.
 This will push this dft data set into the mongodb database 'benchmark-production'.
@@ -51,6 +51,16 @@ To test it out go to [Data description dictionnary](http://0.0.0.0:7000/bench/de
 
 ## bokeh setup
 
+(under testing but this should work, it worked on anaconda on windows)
+
+    $ conda install bokeh
+    $ cd benchmark-view
+    $ bokeh serve crossfilter_app --show
+
+This should automatically start a browser window with the app rendered on it, this can be
+host - port tuned later.
+
+(old setup which may not be necessary now)
 At this point you are set for the data access part. For the visualizatio part
 you will have to build this modified bokeh snapshot. You will need to have gulp
 installed. When asked, select the full install with the option:
