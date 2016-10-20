@@ -178,12 +178,12 @@ class CrossFilter(PlotObject):
 
     def query(self, endpoint):
         # # print ("query")
-        import httplib
+        import http.client
         import json
         import traceback
         import requests
 
-        conn = httplib.HTTPConnection('0.0.0.0', 7000)
+        conn = http.client.HTTPConnection('0.0.0.0', 7000)
         conn.request("GET", endpoint)
         response = conn.getresponse()
         data = response.read()
