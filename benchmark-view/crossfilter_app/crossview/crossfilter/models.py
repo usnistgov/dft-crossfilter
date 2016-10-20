@@ -15,7 +15,7 @@ from .plotting import make_histogram_source, make_histogram, cross, hide_axes
 from .plugins import CrossScatterPlugin, CrossBarPlugin, CrossLinePlugin
 
 # bokeh plotting functions
-from bokeh.plot_object import PlotObject
+from bokeh.model import Model
 from bokeh.properties import Dict, Enum, Instance, List, String, Any, Int
 
 logger = logging.getLogger(__name__)
@@ -90,7 +90,7 @@ class ContinuousFacet(DiscreteFacet):
         return df
 
 
-class CrossFilter(PlotObject):
+class CrossFilter(Model):
     """Interactive filtering and faceting application with multiple plot types"""
 
     # identify properties for the data
@@ -106,7 +106,7 @@ class CrossFilter(PlotObject):
     filtering_columns = List(String)
 
     # dict of column name to filtering widgets
-    filter_widgets = Dict(String, Instance(PlotObject))
+    filter_widgets = Dict(String, Instance(Model))
 
     # dict which aggregates all the selections from the different filtering
     # widgets
@@ -118,7 +118,7 @@ class CrossFilter(PlotObject):
     facet_tab = List(String, default=[])
 
     # the displayed plot object
-    plot = Instance(PlotObject)
+    plot = Instance(Model)
     x_range = Instance(Range)
     y_range = Instance(Range)
 
@@ -203,7 +203,7 @@ class CrossFilter(PlotObject):
         This classmethod is required due to the way that bokeh handles the
         python and javascript components. The initialize method will be
         called each additional time the app is updated (including once in
-        the create method), but the PlotObject infrastructure will find that
+        the create method), but the Model infrastructure will find that
         the object already exists in any future calls, and will not create a
         new object.
 
@@ -333,7 +333,7 @@ class CrossFilter(PlotObject):
         """Makes the correct plot layout type, based on app's current config.
 
         Returns:
-          PlotObject: one plot, grid of plots, or tabs of plots/grids of plots
+          Model: one plot, grid of plots, or tabs of plots/grids of plots
 
         """
         if self.facet_tab:
@@ -355,7 +355,7 @@ class CrossFilter(PlotObject):
           tab_facet (DiscreteFacet or ContinuousFacet): a facet to filter on
 
         Returns:
-          PlotObject: a single or grid of plots
+          Model: a single or grid of plots
 
         """
         # no faceting
@@ -383,7 +383,7 @@ class CrossFilter(PlotObject):
         """Creates a container for the contents of a tab.
 
         Args:
-          content (PlotObject): the primary content of the tab
+          content (Model): the primary content of the tab
           tab_label (str): the text to place in the tab
 
         Returns:
@@ -651,7 +651,7 @@ class CrossFilter(PlotObject):
           tools (str, optional): comma separated string of tool names
 
         Returns:
-          PlotObject: the generated plot
+          Model: the generated plot
 
         """
         faceting = False
