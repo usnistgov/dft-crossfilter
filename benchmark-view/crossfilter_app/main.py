@@ -11,7 +11,7 @@ from bokeh.plotting import figure, curdoc
 
 
 #### CROSSFILTER PART ##### >>> Module load errors throwing up how to do a relative import ?
-# from .crossview.crossfilter.models import CrossFilter
+from crossview.crossfilter.models import CrossFilter
 
 #### DATA INPUT FROM REST API ######
 #from benchmark.loader import load
@@ -76,8 +76,9 @@ def make_crossfilter():
     # use a straight pandas dataframe for now instead and follow the
     # BEST PRACTICE described above basically clean up the data object on each callback.
     new_data = dict() # data that will be given back on the callback
-    data = pd.read_csv('crossfilter_app/Data/Data.csv') # our data
-    # app = CrossFilter.create(df=autompg)
+    data = pd.read_csv('crossfilter_app/Data/Data.csv') # our data that will be replaced by the API
+    app = CrossFilter.create(df=data)
+    print (type(app))
     # dont know what Crossfilter class really returns in terms of data but for testnig purposes lets
     # return something that is compatible with the new_data dictionary return in the
     # vanilla example through the global object ds.data
