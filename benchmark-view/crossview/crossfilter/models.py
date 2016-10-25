@@ -142,7 +142,7 @@ class CrossFilter(PlotObject):
     agg_selector = Instance(Select)
 
     def __init__(self, *args, **kwargs):
-        print "__init__"
+        # print ("__init__")
         """Creates original and filtered ColumnDataSource and handles defaults.
 
         The df and starting configuration are only provided the first time
@@ -177,13 +177,13 @@ class CrossFilter(PlotObject):
         super(CrossFilter, self).__init__(**kwargs)
 
     def query(self, endpoint):
-        print "query"
-        import httplib
+        # # print ("query")
+        import http.client
         import json
         import traceback
         import requests
 
-        conn = httplib.HTTPConnection('0.0.0.0', 7000)
+        conn = http.client.HTTPConnection('0.0.0.0', 7000)
         conn.request("GET", endpoint)
         response = conn.getresponse()
         data = response.read()
@@ -192,12 +192,12 @@ class CrossFilter(PlotObject):
             data_json = json.loads(data)
             return data_json['content']
         except:
-            print traceback.print_exc()
+            # # print (traceback.print_exc())
             return None
 
     @classmethod
     def create(cls, **kwargs):
-        print "create"
+        # print ("create")
         """Performs all one-time construction of bokeh objects.
 
         This classmethod is required due to the way that bokeh handles the
@@ -222,7 +222,7 @@ class CrossFilter(PlotObject):
         return obj
 
     def set_input_selector(self):
-        print "set_input_selector"
+        # print ("set_input_selector")
         """Creates and configures each selector (drop-down menu)."""
         col_names = [x['name'] for x in self.columns]
         col_names.append('None')
@@ -253,7 +253,7 @@ class CrossFilter(PlotObject):
         )
 
     def update_plot_choices(self, input_dict):
-        print "update_plot_choices"
+        # print ("update_plot_choices")
         """Sets object attributes corresponding to input_dict's values.
 
         Args:
@@ -265,12 +265,12 @@ class CrossFilter(PlotObject):
                 setattr(self, k, v)
 
     def get_plot_class(self):
-        print "get_plot_class"
+        # print ("get_plot_class")
         """Return the class for the current plot selection."""
         return self.plot_map[self.plot_type]
 
     def column_descriptor_dict(self):
-        print "column_descriptor_dict"
+        # print ("column_descriptor_dict")
         """Creates column stats dict with keys of column names.
 
         Returns:
@@ -284,7 +284,7 @@ class CrossFilter(PlotObject):
 
     @property
     def continuous_columns(self):
-        print "continuous_columns"
+        # print ("continuous_columns")
         """Returns list of column descriptors for the non-Discrete columns.
 
         Returns:
@@ -295,7 +295,7 @@ class CrossFilter(PlotObject):
 
     @property
     def discrete_columns(self):
-        print "discrete_columns"
+        # print ("discrete_columns")
         """Returns list of column descriptors for the Discrete columns.
 
         Returns:
@@ -305,7 +305,7 @@ class CrossFilter(PlotObject):
         return [x for x in self.columns if x['type'] == 'DiscreteColumn']
 
     def make_plot_choices(self):
-        print "make_plot_choices"
+        # print ("make_plot_choices")
         """Selects first two continuous columns for x,y during initial setup
 
         Returns:
@@ -321,7 +321,7 @@ class CrossFilter(PlotObject):
         return {'x': x, 'y': y, 'plot_type': 'scatter'}
 
     def set_plot(self):
-        print "set_plot"
+        # print ("set_plot")
         """Makes and sets the plot based on the current configuration of app."""
         self.update_xy_ranges(source=self.df)
         plot = self.make_plot()
@@ -329,7 +329,7 @@ class CrossFilter(PlotObject):
         curdoc()._add_all()
 
     def make_plot(self):
-        print "make_plot"
+        # print ("make_plot")
         """Makes the correct plot layout type, based on app's current config.
 
         Returns:
@@ -348,7 +348,7 @@ class CrossFilter(PlotObject):
             return self.create_plot_page()
 
     def create_plot_page(self, tab_facet=None):
-        print "create_plot_page"
+        # print ("create_plot_page")
         """Generates a single visible page of a plot or plots.
 
         Args:
@@ -379,7 +379,7 @@ class CrossFilter(PlotObject):
 
     @staticmethod
     def make_tab(content, tab_label):
-        print "make_tab"
+        # print ("make_tab")
         """Creates a container for the contents of a tab.
 
         Args:
@@ -393,7 +393,7 @@ class CrossFilter(PlotObject):
         return Panel(child=content, title=tab_label)
 
     def make_facets(self, dimension):
-        print "make_facets"
+        # print ("make_facets")
         """Creates combination of all facets for the provided dimension
 
         Args:
@@ -442,7 +442,7 @@ class CrossFilter(PlotObject):
 
     @staticmethod
     def facet_title(facets):
-        print "facet_title"
+        # print ("facet_title")
         """Joins list of facets by commas.
 
         Args:
@@ -457,7 +457,7 @@ class CrossFilter(PlotObject):
         return title
 
     def facet_data(self, facets, df=None):
-        print "facet_data"
+        # print ("facet_data")
         """Filters data to the rows associated with the given facet.
 
         Args:
@@ -476,7 +476,7 @@ class CrossFilter(PlotObject):
         return df
 
     def make_1d_facet_plot(self, facet=None):
-        print "make_1d_facet_plot"
+        # print ("make_1d_facet_plot")
         """Creates the faceted plots when a facet is added to the x axis.
 
         Returns:
@@ -526,7 +526,7 @@ class CrossFilter(PlotObject):
         return GridPlot(children=grid_plots, plot_width=200*chunk_size)
 
     def make_2d_facet_plot(self, facet=None):
-        print "make_2d_facet_plot"
+        # print ("make_2d_facet_plot")
         """Creates the grid of plots when there are both x and y facets.
 
         Returns:
@@ -578,7 +578,7 @@ class CrossFilter(PlotObject):
 
     @staticmethod
     def apply_facet_style(plot):
-        print "apply_facet_style"
+        # print ("apply_facet_style")
         """Applies facet-specific style for a given plot.
 
         Override this method to modify the look of a customized CrossFilter
@@ -590,7 +590,7 @@ class CrossFilter(PlotObject):
         plot.min_border = 0
 
     def apply_single_plot_style(self, plot):
-        print "apply_single_plot_style"
+        # print ("apply_single_plot_style")
         """Applies styles when we have only one plot.
 
         Override this method to modify the look of a customized CrossFilter
@@ -600,7 +600,7 @@ class CrossFilter(PlotObject):
         plot.min_border_left = 60
 
     def apply_grid_style(self, grid_plot):
-        print "apply_grid_style"
+        # print ("apply_grid_style")
         """Applies facet-specific style for the grid of faceted plots.
 
         Override this method to modify the look of a customized CrossFilter
@@ -614,7 +614,7 @@ class CrossFilter(PlotObject):
 
     @staticmethod
     def hide_internal_axes(grid_plots):
-        print "hide_internal_axes"
+        # print ("hide_internal_axes")
         """Hides the internal axes for a grid of plots.
 
         Args:
@@ -640,7 +640,7 @@ class CrossFilter(PlotObject):
                          tools="pan,wheel_zoom,box_zoom,save,resize,"
                                "box_select,reset",
                          facet=None):
-        print "make_single_plot"
+        # print ("make_single_plot")
         """Creates a plot based on the current app configuration.
 
         Args:
@@ -701,7 +701,7 @@ class CrossFilter(PlotObject):
         return plot
 
     def update_xy_ranges(self, source):
-        print "update_xy_ranges"
+        # print ("update_xy_ranges")
         """Updates common x_range, y_range to use for creating figures.
 
         Args:
@@ -716,7 +716,7 @@ class CrossFilter(PlotObject):
         self.y_range = y_range
 
     def plot_attribute_change(self, obj, attrname, old, new):
-        print "plot_attribute_change"
+        # print ("plot_attribute_change")
         """Updates app's attribute and plot when view configuration changes.
 
         Args:
@@ -730,7 +730,7 @@ class CrossFilter(PlotObject):
         self.set_plot()
 
     def facet_change(self, obj, attrname, old, new):
-        print "facet_change"
+        # print ("facet_change")
         """Updates plot when any facet configuration changes.
 
         Args:
@@ -744,7 +744,7 @@ class CrossFilter(PlotObject):
 
     @property
     def df(self):
-        print "df"
+        # print ("df")
         """The core data that is used by the app for plotting.
 
         Returns:
@@ -759,7 +759,7 @@ class CrossFilter(PlotObject):
 
     @property
     def filtered_df(self):
-        print "filtered_df"
+        # print ("filtered_df")
         """The subset of the data to use for plotting.
 
         Returns:
@@ -773,7 +773,7 @@ class CrossFilter(PlotObject):
                 return self.filtered_data.to_df()
 
     def update(self, **kwargs):
-        print "update"
+        # print ("update")
         """Updates CrossFilter attributes each time the model changes.
 
         The events are setup each time so that we can add event handlers to
@@ -784,7 +784,7 @@ class CrossFilter(PlotObject):
         self.setup_events()
 
     def setup_events(self):
-        print "setup_events"
+        # print ("setup_events")
         """Registers events each time the app changes state."""
 
         # watch the app's filtering_columns attribute to setup filters
@@ -815,7 +815,7 @@ class CrossFilter(PlotObject):
         self.on_change('facet_tab', self, 'facet_change')
 
     def handle_filter_selection(self, obj, attrname, old, new):
-        print "handle_filter_selection"
+        # print ("handle_filter_selection")
         """Filters the data source whenever a filter widget changes.
 
         Args:
@@ -870,7 +870,7 @@ class CrossFilter(PlotObject):
         self.set_plot()
 
     def clear_selections(self, obj, attrname, old, new):
-        print "clear_selections"
+        # print ("clear_selections")
         """Updates filter widgets and sources as they are removed.
 
         Args:
@@ -896,7 +896,7 @@ class CrossFilter(PlotObject):
             self.handle_filter_selection(obj, attrname, old, new)
 
     def setup_filter_widgets(self, obj, attrname, old, new):
-        print "setup_filter_widgets"
+        # print ("setup_filter_widgets")
         """Creates new filter widget each time a new column is added to filters.
 
         Args:
@@ -941,7 +941,7 @@ class CrossFilter(PlotObject):
         curdoc()._add_all()
 
     def set_metadata(self):
-        print "set_metadata"
+        # print ("set_metadata")
         """Creates a list of dicts, containing summary info for each column.
 
         The descriptions are stored in the ``columns`` property.
