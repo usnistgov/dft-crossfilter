@@ -25,8 +25,7 @@
       tags: [install]
       when: >
         inventory_hostname in groups['db'] or
-        inventory_hostname in groups['api'] or
-        inventory_hostname in groups['view']
+        inventory_hostname in groups['api']
 
     - include: benchmarkdb.yaml
       tags: [install]
@@ -45,7 +44,6 @@
         - nginx
         - python-httplib2
       when: >
-        inventory_hostname in groups['view'] or
         inventory_hostname in groups['api']
 
     - name: copy api config file

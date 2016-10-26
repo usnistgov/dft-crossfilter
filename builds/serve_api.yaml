@@ -14,7 +14,7 @@
     init_system: "{{ dpkg_stdout.stdout[0:7] }}"
 
 - name: copy service template for systemd
-  template: src={{ inventory_dir }}/api.service.j2 dest=/lib/systemd/system/{{ app_service_name }}.service
+  template: src={{ inventory_dir }}/app.service.j2 dest=/lib/systemd/system/{{ app_service_name }}.service
   when: init_system == "systemd"
   become: true
 
@@ -24,7 +24,7 @@
   become: true
 
 - name: copy service template for upstart
-  template: src={{ inventory_dir }}/api.conf.j2 dest=/etc/init/{{ app_service_name }}.conf
+  template: src={{ inventory_dir }}/app.conf.j2 dest=/etc/init/{{ app_service_name }}.conf
   when: init_system == "upstart"
   become: true
 

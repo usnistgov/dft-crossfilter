@@ -1,4 +1,4 @@
 # The common module
-import models
-import tools
-import core
+from . import models
+from . import tools
+from . import core

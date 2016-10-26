@@ -21,9 +21,9 @@ def crossdomain(origin=None, methods=None, headers=None,
                 automatic_options=True):
     if methods is not None:
         methods = ', '.join(sorted(x.upper() for x in methods))
-    if headers is not None and not isinstance(headers, basestring):
+    if headers is not None and not isinstance(headers, str):
         headers = ', '.join(x.upper() for x in headers)
-    if not isinstance(origin, basestring):
+    if not isinstance(origin, str):
         origin = ', '.join(origin)
     if isinstance(max_age, timedelta):
         max_age = max_age.total_seconds()
@@ -65,4 +65,4 @@ def api_response(code, title, content):
     response = {'code':code, 'title':title, 'content':content}
     return fk.Response(json.dumps(response, sort_keys=True, indent=4, separators=(',', ': ')), mimetype='application/json')
 
-import endpoints
+from . import endpoints

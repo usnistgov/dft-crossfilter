@@ -15,8 +15,8 @@ import datetime
 import random
 import string
 import os
-import thread
-from StringIO import StringIO
+import _thread
+from io import StringIO
 import pandas as pd
 
 
@@ -35,7 +35,7 @@ def home_reference_evaluate_data():
                 content = file_obj.read()
                 tmp_csv.write(content)
 
-            print "New file witten to tmp..."
+            print("New file witten to tmp...")
 
             data = pd.read_csv('/tmp/{0}'.format(file_name))
 
@@ -44,9 +44,9 @@ def home_reference_evaluate_data():
                 head.value = [ col for col in data.columns]
                 head.save()
 
-            print "Head section loaded..."
+            print("Head section loaded...")
             header = ','.join(head.value)
-            print '%s\n'%header
+            print('%s\n'%header)
 
             previous_index = len(RowModel.objects())
 
@@ -57,19 +57,19 @@ def home_reference_evaluate_data():
                 rw = RowModel(index=str(previous_index+index), value=values)
                 rw.save()
 
-            print "New data appended to old data..."
+            print("New data appended to old data...")
 
            
             dataObject.write('%s\n'%header)
 
-            print "Head written to dataframe..."
+            print("Head written to dataframe...")
 
             for row in RowModel.objects():
                 if int(row.index) > 0:
                     oneline = ','.join([str(v) for v in row.value])
                     dataObject.write('%s\n'%oneline)
 
-            print "New merged content written to dataframe..."
+            print("New merged content written to dataframe...")
 
             dataObject.seek(0)
             data_merged = pd.read_csv(dataObject)
@@ -80,7 +80,7 @@ def home_reference_evaluate_data():
             for col in ColModel.objects():
                 col.delete()
 
-            print "Previous decription and columns deleted..."
+            print("Previous decription and columns deleted...")
 
             for c in head.value:
                 _desc = data_merged[c].describe()
@@ -113,7 +113,7 @@ def home_reference_evaluate_data():
                     description['last'] = _desc['last']
                 desc.df = description
                 desc.save()
-            print "New description and columns added..."
+            print("New description and columns added...")
             return api_response(200, 'Push succeed', 'Your file was pushed.')
         else:
             return api_response(204, 'Nothing created', 'You must a set file.')

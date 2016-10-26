@@ -14,6 +14,7 @@ dependencies:
     - mongoengine==0.8.7
     - flask-mongoengine==0.7.1
     - flask-testing
+    - pandas
     - click
     - flask-api
     - flask-stormpath

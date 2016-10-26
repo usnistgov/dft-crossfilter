@@ -1,1 +1,1 @@
-import query_api
+from . import query_api

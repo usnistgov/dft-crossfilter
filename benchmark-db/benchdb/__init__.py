@@ -1,7 +1,7 @@
 import os
 import nose
 from nose.tools import nottest
-import common
+from . import common
 
 
 @nottest

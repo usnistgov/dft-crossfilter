@@ -3,7 +3,7 @@
   args:
     chdir: "{{ benchmark_path }}/benchmark-db"
 
-- name: check import benchmarkdb
-  shell: "{{ python }} -c \"import benchmarkdb\""
+- name: check import benchdb
+  shell: "{{ python }} -c \"import benchdb\""
   args:
     chdir: "{{ benchmark_path }}/benchmark-db"
