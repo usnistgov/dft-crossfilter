@@ -18,7 +18,7 @@ import os
 import _thread
 from io import StringIO
 import pandas as pd
-
+import tempfile
 
 @app.route(API_URL + '/push/csv', methods=['GET','POST','PUT','UPDATE','DELETE'])
 @crossdomain(origin='*')
@@ -31,13 +31,16 @@ def home_reference_evaluate_data():
 
             head = RowModel.objects(index='0').first()
 
-            with open('/tmp/{0}'.format(file_name), 'w') as tmp_csv:
-                content = file_obj.read()
-                tmp_csv.write(str(content))
+            tmp_csv = tempfile.NamedTemporaryFile(mode='w')
+            # with open('/tmp/{0}'.format(file_name), 'w') as tmp_csv:
+            #     content = file_obj.read()
+            #     tmp_csv.write(str(content))
+            content = file_obj.read()
+            tmp_csv.write(str(content))
 
             print("New file witten to tmp...")
 
-            data = pd.read_csv('/tmp/{0}'.format(file_name))
+            data = pd.read_csv(tmp_csv.name)
 
             if head == None:
                 head = RowModel(index='0')
