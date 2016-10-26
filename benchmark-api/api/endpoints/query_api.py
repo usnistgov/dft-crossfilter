@@ -33,7 +33,7 @@ def home_reference_evaluate_data():
 
             with open('/tmp/{0}'.format(file_name), 'w') as tmp_csv:
                 content = file_obj.read()
-                tmp_csv.write(content)
+                tmp_csv.write(str(content))
 
             print("New file witten to tmp...")
 

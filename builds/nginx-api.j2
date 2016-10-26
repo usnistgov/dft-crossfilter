@@ -1,4 +1,5 @@
 server {
+	client_max_body_size 500M;
     listen {{ mapped_port }};
     server_name 0.0.0.0 localhost {{ ansible_ssh_host }};
 
