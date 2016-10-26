@@ -1,0 +1,64 @@
+- name: playbook to install Dft-Crossfilter Benchmark
+  hosts: all
+  serial: 1
+  vars:
+    local_path: /home/{{ ansible_ssh_user }}
+    anaconda_path: "{{ local_path }}/{{ anacondadir }}"
+    default_benchmark_path: "{{ local_path }}/dft-crossfilter"
+    conda: "{{ anaconda_path }}/bin/conda"
+    env_path: "{{ anaconda_path }}/envs/{{ benchmark_env }}/bin"
+    python: "{{ anaconda_path }}/envs/{{ benchmark_env }}/bin/python"
+  tasks:
+
+    - include: benchmark_path.yaml
+      tags: [always]
+
+    - include: clone.yaml
+      tags: [install]
+
+    - include: mongo.yaml
+      tags: [install]
+      when: inventory_hostname in groups['db']
+
+
+    - include: conda.yaml
+      tags: [install]
+      when: >
+        inventory_hostname in groups['db'] or
+        inventory_hostname in groups['api'] or
+        inventory_hostname in groups['view']
+
+    - include: benchmarkdb.yaml
+      tags: [install]
+      when: >
+        inventory_hostname in groups['db'] or
+        inventory_hostname in groups['api']
+
+    - name: install nginx, python-httplib2
+      tags: [install]
+      apt:
+        name: "{{ item }}"
+        state: present
+        force: yes
+      become: true
+      with_items:
+        - nginx
+        - python-httplib2
+      when: >
+        inventory_hostname in groups['view'] or
+        inventory_hostname in groups['api']
+
+    - name: copy api config file
+      tags: [install]
+      when: inventory_hostname in groups['api']
+      template: src={{ inventory_dir }}/config-api.py.j2 dest={{ benchmark_path }}/benchmark-api/config.py
+
+    - include: serve_db.yaml
+      when: inventory_hostname in groups['db']
+      tags: [serve]
+
+    - include: serve_api.yaml
+      when: inventory_hostname in groups['api']
+      tags: [serve]
+      vars:
+        app_path: "{{ benchmark_path }}/benchmark-api"

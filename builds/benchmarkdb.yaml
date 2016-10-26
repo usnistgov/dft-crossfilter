@@ -1,0 +1,9 @@
+- name: install benchmarkdb
+  shell: "{{ env_path }}/python setup.py install"
+  args:
+    chdir: "{{ benchmark_path }}/benchmark-db"
+
+- name: check import benchmarkdb
+  shell: "{{ python }} -c \"import benchmarkdb\""
+  args:
+    chdir: "{{ benchmark_path }}/benchmark-db"

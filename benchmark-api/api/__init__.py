@@ -58,7 +58,7 @@ def crossdomain(origin=None, methods=None, headers=None,
     return decorator
 
 API_VERSION = 1
-API_URL = '/bench'.format(API_VERSION)
+API_URL = '/bench/v{0}'.format(API_VERSION)
 
 def api_response(code, title, content):
     import flask as fk

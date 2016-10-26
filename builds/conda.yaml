@@ -1,0 +1,31 @@
+- name: check if anaconda is installed
+  stat: path={{ anaconda_path }}
+  register: anaconda_dir
+
+- name: download miniconda
+  get_url:
+    url: https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh
+    dest: /tmp
+    force: no
+  when: anaconda_dir.stat.exists == False
+
+- name: install miniconda
+  shell: bash /tmp/Miniconda-latest-Linux-x86_64.sh -b -p {{ anaconda_path }}
+  args:
+    creates: "{{ anaconda_path }}"
+  when: anaconda_dir.stat.exists == False
+
+- name: update conda
+  shell: "{{ conda }} update -y conda"
+  when: anaconda_dir.stat.exists == False
+
+- name: check if conda environment exists
+  stat: path="{{ anaconda_path }}/envs/{{ benchmark_env }}"
+  register: benchmark_env_dir
+
+- name: create benchmark conda env
+  shell: "{{ conda }} create -y -n {{ benchmark_env }} python"
+  when: benchmark_env_dir.stat.exists == False
+
+- name: install required benchmarkdb packages
+  shell: "{{ conda }} env update -n {{ benchmark_env }} --file {{ benchmark_path }}/builds/requirements.yaml"

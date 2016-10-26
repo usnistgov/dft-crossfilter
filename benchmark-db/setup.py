@@ -1,34 +1,65 @@
 #!/usr/bin/env python
+"""Setup for the benchmarkdb module of Dft-Crossfilter.
+"""
 
 import subprocess
 from setuptools import setup, find_packages
 import os
 
-with open('requirements.txt') as f:
-    required = f.read().splitlines()
+def make_version():
+    """Generates a version number using `git describe`.
 
-def git_version():
+    Returns:
+      version number of the form "3.1.1.dev127+g413ed61".
+    """
     def _minimal_ext_cmd(cmd):
+        """Run a command in a subprocess.
+
+        Args:
+          cmd: list of the command
+
+        Returns:
+          output from the command
+        """
         # construct minimal environment
         env = {}
         for k in ['SYSTEMROOT', 'PATH']:
-            v = os.environ.get(k)
-            if v is not None:
-                env[k] = v
+            value = os.environ.get(k)
+            if value is not None:
+                env[k] = value
         # LANGUAGE is used on win32
         env['LANGUAGE'] = 'C'
         env['LANG'] = 'C'
         env['LC_ALL'] = 'C'
-        out = subprocess.Popen(cmd, stdout = subprocess.PIPE, env=env).communicate()[0]
+        out = subprocess.Popen(cmd,
+                               stdout=subprocess.PIPE,
+                               env=env).communicate()[0]
         return out
-    
-    try:
-        out = _minimal_ext_cmd(['git', 'rev-parse', 'HEAD'])
-        GIT_REVISION = out.strip().decode('ascii')
-    except OSError:
-        GIT_REVISION = ""
 
-    return GIT_REVISION
+    version = 'unknown'
+
+    if os.path.exists('../.git'):
+        try:
+            out = _minimal_ext_cmd(['git',
+                                    'describe',
+                                    '--tags',
+                                    '--match',
+                                    'v*'])
+            out = out.decode("utf-8")
+            version = out.strip().split("-")
+            if len(version) > 1:
+                version, dev, sha = version
+                version = "%s.dev%s+%s" % (version[1:], dev, sha)
+            else:
+                version = version[0][1:]
+        except OSError:
+            import warnings
+            warnings.warn("Could not run ``git describe``")
+    elif os.path.exists('corrdb.egg-info'):
+        from corrdb import get_version
+        version = get_version()
+
+    return version
 
 def getVersion(version, release=False):
     if os.path.exists('.git'):
@@ -41,12 +72,11 @@ def getVersion(version, release=False):
         return version + '-dev.' + _git_version
 
 setup(name='benchdb',
-      version=getVersion('alpha-0.1', release=False),
-      install_requires=required,
+      version=make_version(),
       description='Package for Benchmark Database',
       author='Faical Yannick Palingwende Congo',
       author_email='faical.congo@nist.gov',
-      url='',
+      url='https://github.com/usnistgov/dft-Crossfilter',
       packages=find_packages(),
       package_data={'' : ['test/*.py']},
       )

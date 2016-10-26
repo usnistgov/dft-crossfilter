@@ -1,0 +1,24 @@
+- name: install git
+  apt:
+    name: git
+    state: present
+    force: yes
+  become: true
+
+- name: delete benchmark repository
+  file:
+    path: "{{ benchmark_path }}"
+    state: absent
+  become: true
+  tags: [install]
+  when: rev_parse.rc != 0
+
+- name: clone benchmark repository
+  git:
+    repo: https://github.com/{{ benchmark_repo }}.git
+    dest: "{{ benchmark_path }}"
+    version: "{{ benchmark_version }}"
+    clone: yes
+    force: yes
+  tags: [install]
+  when: rev_parse.rc != 0
