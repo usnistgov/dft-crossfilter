@@ -23,7 +23,7 @@ import pandas as pd
 # create a plot and style its properties
 
 ## gloabl data interface to come from REST API
-vasp_data = pd.read_csv('crossfilter_app/Data/Data.csv')
+vasp_data = pd.read_csv('./Data/Data.csv')
 
 p = figure(x_range=(0, 100), y_range=(0, 100), toolbar_location=None)
 #p.border_fill_color = 'black'
@@ -255,12 +255,18 @@ def make_widgets():
     
 #### WIDGET CREATIONS ####
 
+# OLD VANILLA
 # add a button widget and configure with the call back
-button_basic = Button(label="Press Me")
-button_basic.on_click(callback)
+# button_basic = Button(label="Press Me")
+# button_basic.on_click(callback)
 
 # create a button for crossfilter
 button_crossfilter = Button(label="Make Crossfilter")
-button_crossfilter.on_click(make_crossfilter)
+button_crossfilter.on_click(make_bokeh_crossfilter)
+
+#create a button for crossfilter_workflwo
+button_w_crossfilter = Button(label="Make Crossfilter Workflow")
+button_w_crossfilter.on_click(make_wflow_crossfilter)
+
 # put the button and plot in a layout and add to the document
-curdoc().add_root(column(button_basic, button_crossfilter, p))
+curdoc().add_root(column(button_crossfilter, button_w_crossfilter, p))
