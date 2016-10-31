@@ -156,9 +156,11 @@ class CrossFilter(Model):
         """
         if 'df' in kwargs:
             self._df = kwargs.pop('df')
+            print "what is understood from the df", self._df
 
             # initialize a "pure" and filtered data source based on df
             data_source = self.query("http://0.0.0.0:7000/bench/col/dict/all")
+            print "query successful"
             kwargs['head'] = ColumnDataSource(data=self._df)
             kwargs['data'] = ColumnDataSource(data=data_source)
             kwargs['filtered_data'] = ColumnDataSource(data=data_source)
@@ -178,12 +180,12 @@ class CrossFilter(Model):
 
     def query(self, endpoint):
         # print ("query")
-        import http.client
+        import httplib
         import json
         import traceback
         import requests
 
-        conn = http.client.HTTPConnection('0.0.0.0', 7000)
+        conn = httplib.HTTPConnection('0.0.0.0', 7000)
         conn.request("GET", endpoint)
         response = conn.getresponse()
         data = response.read()
@@ -197,7 +199,7 @@ class CrossFilter(Model):
 
     @classmethod
     def create(cls, **kwargs):
-        # print ("create")
+        print "create"
         """Performs all one-time construction of bokeh objects.
 
         This classmethod is required due to the way that bokeh handles the
@@ -214,11 +216,15 @@ class CrossFilter(Model):
 
         """
         obj = cls(**kwargs)
+        print "executes"
         obj.set_metadata()
         choices = obj.make_plot_choices()
+        print "choices set"
         obj.update_plot_choices(choices)
+        print "setting plot"
         obj.set_plot()
         obj.set_input_selector()
+        print "all set and return object"
         return obj
 
     def set_input_selector(self):
