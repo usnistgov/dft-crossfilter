@@ -159,7 +159,7 @@ class CrossFilter(Model):
             print "what is understood from the df", self._df
 
             # initialize a "pure" and filtered data source based on df
-            data_source = self.query("http://0.0.0.0:7000/bench/col/dict/all")
+            data_source = self.query("http://100.200.94.205/bench/col/dict/all")
             print "query successful"
             kwargs['head'] = ColumnDataSource(data=self._df)
             kwargs['data'] = ColumnDataSource(data=data_source)
@@ -185,7 +185,7 @@ class CrossFilter(Model):
         import traceback
         import requests
 
-        conn = httplib.HTTPConnection('0.0.0.0', 7000)
+        conn = httplib.HTTPConnection('100.200.94.205', 80)
         conn.request("GET", endpoint)
         response = conn.getresponse()
         data = response.read()
