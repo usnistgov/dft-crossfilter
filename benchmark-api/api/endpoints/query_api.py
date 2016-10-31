@@ -20,6 +20,13 @@ from io import StringIO
 import pandas as pd
 import tempfile
 
+def convert_keys_to_string(dictionary):
+    """Recursively converts dictionary keys to strings."""
+    if not isinstance(dictionary, dict):
+        return dictionary
+    return dict((str(k), convert_keys_to_string(v)) 
+        for k, v in dictionary.items())
+
 @app.route(API_URL + '/push/csv', methods=['GET','POST','PUT','UPDATE','DELETE'])
 @crossdomain(origin='*')
 def home_reference_evaluate_data():
@@ -31,21 +38,33 @@ def home_reference_evaluate_data():
 
             head = RowModel.objects(index='0').first()
 
-            tmp_csv = tempfile.NamedTemporaryFile(mode='w')
-            # with open('/tmp/{0}'.format(file_name), 'w') as tmp_csv:
-            #     content = file_obj.read()
-            #     tmp_csv.write(str(content))
-            content = file_obj.read()
-            tmp_csv.write(str(content))
+            # tmp_csv = tempfile.NamedTemporaryFile(mode='w')
+            csv_path = ''
+            data = None
+            with tempfile.TemporaryDirectory() as tmpdirname:
+                csv_path = '{0}/{1}'.format(tmpdirname, file_name)
+                # print(csv_path)
+                with open(csv_path, 'w') as tmp_csv:
+                    content = file_obj.read().decode("UTF8")
+                    # print(content)
+                    tmp_csv.write(str(content))
+                # with open(csv_path, 'r') as tmp_csv:
+                #     print(tmp_csv.read())
+            # content = file_obj.read()
+            # tmp_csv.write(str(content))
 
-            print("New file witten to tmp...")
+            # print("New file witten to tmp...")
+            # print(tmp_csv.name)
 
-            data = pd.read_csv(tmp_csv.name)
+                data = pd.read_csv(str(csv_path))
+            # print(data)
+            print("Read in pandas")
 
             if head == None:
                 head = RowModel(index='0')
                 head.value = [ col for col in data.columns]
                 head.save()
+            print("Head done.")
 
             print("Head section loaded...")
             header = ','.join(head.value)
@@ -93,7 +112,7 @@ def home_reference_evaluate_data():
                 col.values = data_merged[c].tolist()
                 col.save()
                 description = {}
-                description['count'] = _desc['count']
+                description['count'] = int(_desc['count'])
                 description['dtype'] = str(_desc.dtype)
                 if description['dtype'] == 'float64':
                     description['mean'] = _desc['mean']
@@ -103,14 +122,15 @@ def home_reference_evaluate_data():
                     description['25%'] = _desc['min']
                     description['50%'] = _desc['min']
                     description['75%'] = _desc['min']
-                    description['histogram'] = data[c]
+                    description['histogram'] = data[c].tolist()
                 elif description['dtype'] == 'object':
-                    description['unique'] = _desc['unique']
+                    description['unique'] = int(_desc['unique'])
                     description['top'] = _desc['top']
-                    description['freq'] = _desc['freq']
+                    description['freq'] = int(_desc['freq'])
                     description['options'] = data_merged[c].unique().tolist()
+                    # print(_desc['top'])
                 elif description['dtype'] == 'datetime64':
-                    description['unique'] = _desc['unique']
+                    description['unique'] = int(_desc['unique'])
                     description['options'] = data_merged[c].unique().tolist()
                     description['first'] = _desc['first']
                     description['last'] = _desc['last']
