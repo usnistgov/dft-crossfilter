@@ -2,10 +2,9 @@ from os.path import dirname, join
 
 import pandas as pd
 import numpy as np
-from collections import OrderedDict
 
 from bokeh.layouts import row, widgetbox, column
-from bokeh.models import Select, Div, Column, HoverTool, ColumnDataSource, PanTool, ResetTool, BoxZoomTool
+from bokeh.models import Select, Div, Column, HoverTool, ColumnDataSource
 from bokeh.palettes import Spectral5
 from bokeh.plotting import curdoc, figure
 from bokeh.sampledata.periodic_table import elements
@@ -19,8 +18,8 @@ SIZES = list(range(6, 22, 3))
 COLORS = Spectral5
 
 
-
-
+# data cleanup
+#df.cyl = [str(x) for x in df.cyl]
 #df.origin = [ORIGINS[x-1] for x in df.origin]
 
 #df['year'] = [str(x) for x in df.yr]
@@ -41,15 +40,6 @@ df_obs = pd.read_csv('./Data/Data.csv')
 # single reference standard this can be an on request 
 # basis input as well 
 #df_ref = pd.read_json('./Data/Ref.json')
-
-#df_obs.percent_accuracy = [ ( (x['value'] - df_ref[x['element']][x['property']]) / df_ref[x['element']][x['property']] ) * 100 
-#                           for x in df_obs.iterrows() ]
-
-# df_pade_prec
-#df_obs.percent_pade_prec = [ ( (x['value'] - df_pade_prec[x['element']][x['property'] ] ) / df_pade_prec[x['element']][x['property']])  * 100 for x in df_obs.iterrows()]
-
-# df_sigma_prec
-#df_obs.percent_sigma_prec = [ ( (x['value'] - df_sigma_prec[x['element']][x['property'] ] ) / df_sigma_prec[x['element']][x['property']])  * 100 for x in df_obs.iterrows()]
 
 # dividing data into gneeral discretes, continuous and quantileables
 
@@ -94,8 +84,6 @@ def create_figure():
     x_title = x.value.title()
     y_title = y.value.title()
 
-    df_select2d = pd.DataFrame({x.value:xs, y.value:ys})
-#    print (df_select2d)
     kw = dict()
 #    if x.value in continuous:
 #        kw['x_range'] = sorted(set(xs))
@@ -105,21 +93,11 @@ def create_figure():
 #    print (type(kw['y_range']))
     kw['title'] = "%s vs %s" % (x_title, y_title)
 
-    source = ColumnDataSource(ColumnDataSource.from_df(df_select2d))
-#    print (source.columns)
-    hover = HoverTool()
-    pan = PanTool()
-    bzoom = BoxZoomTool()
-#    hover.tooltips = OrderedDict([('k-point', '$k-point'),('value', '$value')])
-#    hover = HoverTool(tooltips=[("(x, $x)", "(y, $y)")])
-
-    p = figure(plot_height=600, plot_width=800, tools=[hover, pan, bzoom], **kw)
+    p = figure(plot_height=600, plot_width=800, tools='pan,box_zoom,reset,hover', **kw)
     p.xaxis.axis_label = x_title
 
     p.yaxis.axis_label = y_title
 
-    hover = p.select(dict(type=HoverTool))
-    hover.tooltips = OrderedDict([('k-point', '$k-point'),('value', '$value')])
 
     # sets the xaxis
     if x.value in continuous:
@@ -135,7 +113,7 @@ def create_figure():
     if color.value != 'None':
         groups = pd.qcut(df[color.value].values, len(COLORS))
         c = [COLORS[xx] for xx in groups.codes]
-    p.circle(x='k-point', y='value', source=source)#, color=c, size=sz, line_color="white", alpha=1.0, hover_color='blue')#, hover_alpha=1.0)
+    p.circle(x=xs, y=ys, color=c, size=sz, line_color="white", alpha=1.0, hover_color='blue', hover_alpha=1.0)
 
     return p
 
