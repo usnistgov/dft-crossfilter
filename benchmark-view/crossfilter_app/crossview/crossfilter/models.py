@@ -15,8 +15,8 @@ from .plotting import make_histogram_source, make_histogram, cross, hide_axes
 from .plugins import CrossScatterPlugin, CrossBarPlugin, CrossLinePlugin
 
 # bokeh plotting functions
-from bokeh.plot_object import PlotObject
-from bokeh.properties import Dict, Enum, Instance, List, String, Any, Int
+from bokeh.model import Model
+from bokeh.core.properties import Dict, Enum, Instance, List, String, Any, Int
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +90,7 @@ class ContinuousFacet(DiscreteFacet):
         return df
 
 
-class CrossFilter(PlotObject):
+class CrossFilter(Model):
     """Interactive filtering and faceting application with multiple plot types"""
 
     # identify properties for the data
@@ -106,7 +106,7 @@ class CrossFilter(PlotObject):
     filtering_columns = List(String)
 
     # dict of column name to filtering widgets
-    filter_widgets = Dict(String, Instance(PlotObject))
+    filter_widgets = Dict(String, Instance(Model))
 
     # dict which aggregates all the selections from the different filtering
     # widgets
@@ -118,7 +118,7 @@ class CrossFilter(PlotObject):
     facet_tab = List(String, default=[])
 
     # the displayed plot object
-    plot = Instance(PlotObject)
+    plot = Instance(Model)
     x_range = Instance(Range)
     y_range = Instance(Range)
 
@@ -156,9 +156,11 @@ class CrossFilter(PlotObject):
         """
         if 'df' in kwargs:
             self._df = kwargs.pop('df')
+            print "what is understood from the df", self._df
 
             # initialize a "pure" and filtered data source based on df
             data_source = self.query("http://0.0.0.0:7000/bench/col/dict/all")
+            print "query successful"
             kwargs['head'] = ColumnDataSource(data=self._df)
             kwargs['data'] = ColumnDataSource(data=data_source)
             kwargs['filtered_data'] = ColumnDataSource(data=data_source)
@@ -177,13 +179,13 @@ class CrossFilter(PlotObject):
         super(CrossFilter, self).__init__(**kwargs)
 
     def query(self, endpoint):
-        # # print ("query")
-        import http.client
+        # print ("query")
+        import httplib
         import json
         import traceback
         import requests
 
-        conn = http.client.HTTPConnection('0.0.0.0', 7000)
+        conn = httplib.HTTPConnection('0.0.0.0', 7000)
         conn.request("GET", endpoint)
         response = conn.getresponse()
         data = response.read()
@@ -192,18 +194,18 @@ class CrossFilter(PlotObject):
             data_json = json.loads(data)
             return data_json['content']
         except:
-            # # print (traceback.print_exc())
+            # print (traceback.print_exc())
             return None
 
     @classmethod
     def create(cls, **kwargs):
-        # print ("create")
+        print "create"
         """Performs all one-time construction of bokeh objects.
 
         This classmethod is required due to the way that bokeh handles the
         python and javascript components. The initialize method will be
         called each additional time the app is updated (including once in
-        the create method), but the PlotObject infrastructure will find that
+        the create method), but the Model infrastructure will find that
         the object already exists in any future calls, and will not create a
         new object.
 
@@ -214,11 +216,15 @@ class CrossFilter(PlotObject):
 
         """
         obj = cls(**kwargs)
+        print "executes"
         obj.set_metadata()
         choices = obj.make_plot_choices()
+        print "choices set"
         obj.update_plot_choices(choices)
+        print "setting plot"
         obj.set_plot()
         obj.set_input_selector()
+        print "all set and return object"
         return obj
 
     def set_input_selector(self):
@@ -333,7 +339,7 @@ class CrossFilter(PlotObject):
         """Makes the correct plot layout type, based on app's current config.
 
         Returns:
-          PlotObject: one plot, grid of plots, or tabs of plots/grids of plots
+          Model: one plot, grid of plots, or tabs of plots/grids of plots
 
         """
         if self.facet_tab:
@@ -355,7 +361,7 @@ class CrossFilter(PlotObject):
           tab_facet (DiscreteFacet or ContinuousFacet): a facet to filter on
 
         Returns:
-          PlotObject: a single or grid of plots
+          Model: a single or grid of plots
 
         """
         # no faceting
@@ -383,7 +389,7 @@ class CrossFilter(PlotObject):
         """Creates a container for the contents of a tab.
 
         Args:
-          content (PlotObject): the primary content of the tab
+          content (Model): the primary content of the tab
           tab_label (str): the text to place in the tab
 
         Returns:
@@ -651,7 +657,7 @@ class CrossFilter(PlotObject):
           tools (str, optional): comma separated string of tool names
 
         Returns:
-          PlotObject: the generated plot
+          Model: the generated plot
 
         """
         faceting = False
@@ -952,7 +958,7 @@ class CrossFilter(PlotObject):
         descriptions = self.query('/bench/desc/all')
         if descriptions:
             for description in descriptions:
-                # print description
+                # # print (description
                 # DiscreteColumn
                 if 'object' in description['df']['dtype']:
                     descriptors.append({
@@ -1019,6 +1025,6 @@ class CrossFilter(PlotObject):
         #             # 'max': "%.2f"%desc['max'],
         #         })
 
-        # print str(descriptors)
+        # # print (str(descriptors)
 
         self.columns = descriptors

@@ -1,0 +1,11 @@
+A Hack based on a flash of thouhgt:
+
+The Crossfilter folder is actually all that is needed for the data visualization page of the website
+
+1. chnage working main.py to old_main.py
+
+2. copy contents of crossfilter to root crossfilter_app folder. 
+
+3. change models.py to main.py and run the app and see what happends! ! 
+
+Test in python3
