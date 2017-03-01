@@ -35,7 +35,7 @@ COLORS = Spectral5
 #df.loc[df.mfr=='vw', 'mfr'] = 'volkswagen'
 #del df['name']
 
-df_obs = pd.read_csv('./crossfilter_app/Data/main_with_precs_v4.csv')
+df_obs = pd.read_csv('./crossfilter_app/Data/Data.csv')
 print ('read df_obs')
 # single reference standard this can be an on request
 # basis input as well
