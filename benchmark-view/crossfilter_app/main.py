@@ -330,9 +330,28 @@ class CrossFiltDFs():
 
 def analysis_callback():
 
-    os.system('Rscript Pade.R')
+    os.system('Rscript hennig_nls.R')
     print ('executed R script on crossfiltered data')
 
+def load_ticker(ticker):
+    print ('calling load_ticker')
+    fname = join(DATA_DIR, 'table_%s.csv' % ticker.lower())
+    data = pd.read_csv(fname, header=None, parse_dates=['date'],
+                       names=['date', 'foo', 'o', 'h', 'l', 'c', 'v'])
+    data = data.set_index('date')
+    return pd.DataFrame({ticker: data.c, ticker+'_returns': data.c.diff()})
+
+def get_data(t1, t2):
+    print ('calling get_data')
+    df1 = load_ticker(t1)
+    df2 = load_ticker(t2)
+    data = pd.concat([df1, df2], axis=1)
+    data = data.dropna()
+    data['t1'] = data[t1]
+    data['t2'] = data[t2]
+    data['t1_returns'] = data[t1+'_returns']
+    data['t2_returns'] = data[t2+'_returns']
+    return data
 
 CF = CrossFiltDFs()
 #struct_options = list(np.unique(df_obs['structure']))
