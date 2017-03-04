@@ -1,3 +1,4 @@
+import os
 from os.path import dirname, join
 
 import pandas as pd
@@ -171,13 +172,15 @@ ptable.select_one(HoverTool).tooltips = [
 
 
 # decide if all columns or crossfilter down to sub properties
+#source_data = pd.DataFrame({})#ColumnDataSource(data=dict())
 
 class CrossFiltDFs():
 
-    def __init__(self,struct_df=None,elem_df=None,prop_df=None):
+    def __init__(self,struct_df=None,elem_df=None,prop_df=None, plot_data=None):
         self.struct_df = struct_df
         self.elem_df = elem_df
         self.prop_df = prop_df
+        self.plot_data = plot_data
 
 
     def crossfilter_by_tag(self,df, tag):
@@ -297,10 +300,14 @@ class CrossFiltDFs():
 #    code = Select(title='Code', value=code_options[0], options=code_options)
 #    code.on_change('value', update)
 
-    def update_element(self,attr,old,new):
+    def update_element(self):
         print ('Updating element down selection for property')
         #print (np.unique(struct_df['element']))
-        self.elem_df = self.crossfilter_by_tag(self.struct_df, {'element':element.value})
+        self.elem_df = df_obs[df_obs['element'] == element.value].dropna()
+        #print (self.elem_df)
+        self.plot_data = self.elem_df
+        source_data = pd.DataFrame(self.elem_df.to_dict(orient='list'))
+        #self.elem_df = self.crossfilter_by_tag(self.struct_df, {'element':element.value})
         #print (elem_df)
         #prop_options = list(np.unique(elem_df['property']))
         #prop = Select(title='Property', value=prop_options[0], options=prop_options)
@@ -311,24 +318,46 @@ class CrossFiltDFs():
 #    layout = column(description, ptable, controls, create_figure())
 #    curdoc().add_root(layout)
 
-    def update_struct(self,attr, old, new):
+    def update_struct(self):
        print ('Updating struct down selection for element')
-       self.struct_df = self.crossfilter_by_tag(df_obs, {'structure':struct.value})
+       print ("struct.value",struct.value)
+       #print (self.elem_df)
+       self.struct_df = self.elem_df[self.elem_df['structure'] == struct.value].dropna()
+       #print (self.struct_df)
+       self.plot_data = self.struct_df
+       #source_data = pd.DataFrame(self.struct_df.to_dict(orient='list'))
+       print ('finished callback to update layout')
+       #self.crossfilter_by_tag(df_obs, {'structure':struct.value})
        #elem_options = list(np.unique(struct_df['element']))
        #print (elem_options)
        #element = Select(title='Element', value=elem_options[0], options=elem_options)
        #element.on_change('value', update_element)
-       print ('finished callback to update layout')
 
+
+    def update_prop(self):
+       print ('Updating struct down selection for element')
+       self.prop_df = self.struct_df[self.struct_df['property'] == prop.value].dropna()
+       print ('The final dict', self.prop_df.to_dict(orient='list'))
+       self.plot_data = self.prop_df
+       #source_data = pd.DataFrame(self.prop_df.to_dict(orient='list'))
+       #print ('The final source data', source_data)
 
     def update_crossfilter(self):
-       new_data = dict()
-       new_data = self.prop_df
-       print (new_data)
-       layout.children[3] = self.create_figure(new_data)
+       print ('Triggering crossfilter')#, source_data)
+       #self.plot_data = source_data
+       print (type(self.plot_data))
+       print (self.plot_data)
+       #new_data = source_data
+       #print (new_data)
+       layout.children[3] = self.create_figure(self.plot_data)
 
+
+def update():
+    source_data = CF.plot_data
 
 def analysis_callback():
+
+    print ('called callback')
 
     os.system('Rscript hennig_nls.R')
     print ('executed R script on crossfiltered data')
@@ -356,17 +385,16 @@ def get_data(t1, t2):
 CF = CrossFiltDFs()
 #struct_options = list(np.unique(df_obs['structure']))
 struct = Select(title='Structure', value=structures[0], options=structures)
-struct.on_change('value', CF.update_struct)
-
+struct.on_change('value', lambda attr, old, new: CF.update_struct())
 
 #elem_options = list(np.unique(struct_df['element']))
 element = Select(title='Element', value=_elements[0], options=_elements)
-element.on_change('value', CF.update_element)
+element.on_change('value', lambda attr, old, new: CF.update_element())
 
 
 #prop_options = list(np.unique(elem_df['property']))
 prop = Select(title='Property', value=properties[0], options=properties)
-prop.on_change('value', CF.update)
+prop.on_change('value', lambda attr, old, new: CF.update_prop())
 
 
 #code_options = list(np.unique(prop_df['code']))
@@ -417,8 +445,11 @@ print ('executed till here')
 #color = Select(title='Color', value='None', options=['None'] )
 #color.on_change('value', update)
 
-controls = widgetbox([struct, element, prop, apply_crossfilter, x, y, analyse_crossfilt], width=200)
+controls = widgetbox([element, struct, prop, apply_crossfilter, x, y, analyse_crossfilt], width=200)
+print ('Initial init figure data', type(CF_init.prop_df))
 layout = column(description, ptable, controls, CF_init.create_figure(CF_init.prop_df))
 
 curdoc().add_root(layout)
 curdoc().title = "DFT Benchmark"
+
+update()
