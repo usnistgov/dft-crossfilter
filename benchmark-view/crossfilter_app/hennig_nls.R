@@ -1,7 +1,7 @@
 #x11(width=1, height=1)       # X11 Plot dimensions
 library(minpack.lm)          # Load the minpack.lm package
 
-mydata = read.csv("Rdata.csv")  # Read CSV data file
+mydata = read.csv("crossfilter_app/Rdata.csv")  # Read CSV data file
 x<-mydata$Kpts_atom         # Select the kpoints atom density
 y<-mydata$P
 

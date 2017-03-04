@@ -74,17 +74,12 @@ codes = list(np.unique(df_obs['code']))
 
 ## have another dataframe (mongo collection) for the reference standards to compute the accuracy (uniquely identified by the element SAME standard should apply to all codes/exchanges/elements.
 
-
-
-
 ############## Header Content from description.html  #################
 print (__file__)
 content_filename = join(dirname(__file__), "description.html")
 
 description = Div(text=open(content_filename).read(),
                   render_as_text=True, width=600)
-
-
 
 
 # periodic table
@@ -166,7 +161,6 @@ ptable.select_one(HoverTool).tooltips = [
     ("electronic configuration", "@electronic"),
 ]
 
-#print (help(ptable))
 
 ######### CREATES CROSSFILTER ##########################
 
@@ -221,9 +215,6 @@ class CrossFiltDFs():
 
     def create_figure(self,dataset):
 
-    #crossfilt = crossfilter_by_choices(struct.value, element.value, prop.value,\
-    #                         code.value, exchange.value)
-    #print ('This is the crossfilt coming in to create figure', crossfilt)
 
           xs =dataset[x.value].values
 #    print (type(sorted(set(xs))))
@@ -280,25 +271,7 @@ class CrossFiltDFs():
        print ('Attribute', attr, 'OLD', old, 'NEW', new)
        #print (len(layout.children))
        print ('executes here on update')#, exchange_df)
-       #print (prop_df)
-       #layout.children[3] = create_figure()
 
-
-#def update_code(attr,old,new):
-#    print ('Updating code down selection for exchange')
-#    code_df = crossfilter_by_tag(prop_df, {'property':prop.value})
-#    exchange_options = list(np.unique(code_df['exchange']))
-#    exchange = Select(title='ExchangeCorrelation', value=exchange_options[0], options=exchange_options)
-#    exchange_df = crossfilter_by_tag(elem_df, {'property':prop.value})
-#    exchange.on_change('value', update)
-
-
-#def update_prop(attr,old,new):
-#    print ('Updating property down selection for code')
-#    prop_df = crossfilter_by_tag(elem_df, {'property':prop.value})
-#    code_options = list(np.unique(prop_df['code']))
-#    code = Select(title='Code', value=code_options[0], options=code_options)
-#    code.on_change('value', update)
 
     def update_element(self):
         print ('Updating element down selection for property')
@@ -307,48 +280,31 @@ class CrossFiltDFs():
         #print (self.elem_df)
         self.plot_data = self.elem_df
         source_data = pd.DataFrame(self.elem_df.to_dict(orient='list'))
-        #self.elem_df = self.crossfilter_by_tag(self.struct_df, {'element':element.value})
-        #print (elem_df)
-        #prop_options = list(np.unique(elem_df['property']))
-        #prop = Select(title='Property', value=prop_options[0], options=prop_options)
-        #prop.on_change('value', update)
-        #prop_df = self.crossfilter_by_tag(self.elem_df, {'property':prop.value})
 
-#    controls = widgetbox([struct, element, prop, code, exchange, x, y], width=200)
-#    layout = column(description, ptable, controls, create_figure())
-#    curdoc().add_root(layout)
 
     def update_struct(self):
        print ('Updating struct down selection for element')
        print ("struct.value",struct.value)
-       #print (self.elem_df)
+
        self.struct_df = self.elem_df[self.elem_df['structure'] == struct.value].dropna()
-       #print (self.struct_df)
+
        self.plot_data = self.struct_df
-       #source_data = pd.DataFrame(self.struct_df.to_dict(orient='list'))
+
        print ('finished callback to update layout')
-       #self.crossfilter_by_tag(df_obs, {'structure':struct.value})
-       #elem_options = list(np.unique(struct_df['element']))
-       #print (elem_options)
-       #element = Select(title='Element', value=elem_options[0], options=elem_options)
-       #element.on_change('value', update_element)
 
 
     def update_prop(self):
        print ('Updating struct down selection for element')
+       print (prop.value)
        self.prop_df = self.struct_df[self.struct_df['property'] == prop.value].dropna()
-       print ('The final dict', self.prop_df.to_dict(orient='list'))
+       #print ('The final dict', self.prop_df.to_dict(orient='list'))
        self.plot_data = self.prop_df
-       #source_data = pd.DataFrame(self.prop_df.to_dict(orient='list'))
-       #print ('The final source data', source_data)
+
 
     def update_crossfilter(self):
-       print ('Triggering crossfilter')#, source_data)
-       #self.plot_data = source_data
+       print ('Triggering crossfilter')
        print (type(self.plot_data))
-       print (self.plot_data)
-       #new_data = source_data
-       #print (new_data)
+       print (np.unique(self.plot_data['property']))
        layout.children[3] = self.create_figure(self.plot_data)
 
 
@@ -359,7 +315,7 @@ def analysis_callback():
 
     print ('called callback')
 
-    os.system('Rscript hennig_nls.R')
+    os.system('Rscript crossfilter_app/hennig_nls.R')
     print ('executed R script on crossfiltered data')
 
 def load_ticker(ticker):
