@@ -10,31 +10,6 @@ from bokeh.palettes import Spectral5
 from bokeh.plotting import curdoc, figure
 from bokeh.sampledata.periodic_table import elements
 
-##### loading the data which the API needs to take care fo ######
-#from bokeh.sampledata.autompg import autompg
-
-#df = autompg.copy()
-#print (df.columns)
-SIZES = list(range(6, 22, 3))
-COLORS = Spectral5
-
-
-# data cleanup
-#df.cyl = [str(x) for x in df.cyl]
-#df.origin = [ORIGINS[x-1] for x in df.origin]
-
-#df['year'] = [str(x) for x in df.yr]
-#del df['yr']
-
-#df['mfr'] = [x.split()[0] for x in df.name]
-#df.loc[df.mfr=='chevy', 'mfr'] = 'chevrolet'
-#df.loc[df.mfr=='chevroelt', 'mfr'] = 'chevrolet'
-#df.loc[df.mfr=='maxda', 'mfr'] = 'mazda'
-#df.loc[df.mfr=='mercedes-benz', 'mfr'] = 'mercedes'
-#df.loc[df.mfr=='toyouta', 'mfr'] = 'toyota'
-#df.loc[df.mfr=='vokswagen', 'mfr'] = 'volkswagen'
-#df.loc[df.mfr=='vw', 'mfr'] = 'volkswagen'
-#del df['name']
 
 df_obs = pd.read_csv('./crossfilter_app/Data/Data.csv')
 print ('read df_obs')
@@ -75,14 +50,14 @@ codes = list(np.unique(df_obs['code']))
 ## have another dataframe (mongo collection) for the reference standards to compute the accuracy (uniquely identified by the element SAME standard should apply to all codes/exchanges/elements.
 
 ############## Header Content from description.html  #################
-print (__file__)
+
 content_filename = join(dirname(__file__), "description.html")
 
 description = Div(text=open(content_filename).read(),
                   render_as_text=True, width=600)
 
 
-# periodic table
+# periodic table widget
 romans = ["I", "II", "III", "IV", "V", "VI", "VII"]
 
 elements["atomic mass"] = elements["atomic mass"].astype(str)
@@ -170,12 +145,14 @@ ptable.select_one(HoverTool).tooltips = [
 
 class CrossFiltDFs():
 
-    def __init__(self,struct_df=None,elem_df=None,prop_df=None, plot_data=None):
+    def __init__(self,struct_df=None,elem_df=None,prop_df=None,\
+                 plot_data=None, code_df=None, exchange_df=None):
         self.struct_df = struct_df
         self.elem_df = elem_df
         self.prop_df = prop_df
+        self.code_df = code_df
+        self.exchange_df = exchange_df
         self.plot_data = plot_data
-
 
     def crossfilter_by_tag(self,df, tag):
         """
@@ -194,6 +171,8 @@ class CrossFiltDFs():
         """
         crossfilter control based on UI choices.
         crossfilters and returns the dataframe after crossfiltering
+
+        may be deprecated
         """
         # first selects the element
         struct_df  = df_obs[df_obs['structure']==struct_choice]
@@ -212,36 +191,34 @@ class CrossFiltDFs():
         return exchange_code_prop_elem_struct_df
 
 
+    def create_figure(self,dataset, datplot=True):
 
-    def create_figure(self,dataset):
+        kw = dict()
 
-
+        if datplot:
           xs =dataset[x.value].values
-#    print (type(sorted(set(xs))))
-    # read the data from the df
-#    xs = df_obs[x.value].values
           ys = dataset[y.value].values
           x_title = x.value.title()
           y_title = y.value.title()
 
-          kw = dict()
+
 #    if x.value in continuous:
 #        kw['x_range'] = sorted(set(xs))
 #    print (type(kw['x_range']))
 #    if y.value in continuous:
 #        kw['y_range'] = sorted(set(ys))
 #    print (type(kw['y_range']))
+
           kw['title'] = "%s vs %s" % (y_title, x_title)
+
           if x.value=='k-point':
               kw['x_axis_type'] = 'log'
-              if y.value == 'perc_precisions':
-                 kw['y_axis_type'] = 'log'
 
           elif x.value == 'perc_precisions' and y.value == 'perc_precisions':
               kw['x_axis_type'] = 'log'
               kw['y_axis_type'] = 'log'
 
-          p = figure(plot_height=600, plot_width=800, tools='pan,box_zoom,reset,hover', **kw)
+          p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,reset,hover', **kw)
           p.xaxis.axis_label = x_title
 
           p.yaxis.axis_label = y_title
@@ -251,8 +228,8 @@ class CrossFiltDFs():
           if x.value in continuous:
              p.xaxis.major_label_orientation = pd.np.pi / 4
 
-          if x.value == 'k-point':
-            xs = [k**3 for k in xs]
+          #if x.value == 'k-point':
+        #    xs = [k**3 for k in xs]
     #sz = 9
     #if size.value != 'None':
     #    groups = pd.qcut(df[size.value].values, len(SIZES))
@@ -263,7 +240,13 @@ class CrossFiltDFs():
     #    groups = pd.qcut(df[color.value].values, len(COLORS))
     #    c = [COLORS[xx] for xx in groups.codes]
           p.scatter(x=xs, y=ys, line_color="white", alpha=1.0, hover_color='blue', hover_alpha=1.0)
+          return p
 
+        else:
+          xs = []
+          ys = []
+          p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,reset,hover', **kw)
+          p.scatter(x=xs, y=ys, line_color="white", alpha=1.0, hover_color='blue', hover_alpha=1.0)
           return p
 
 # The crossfilter widgets
@@ -272,40 +255,68 @@ class CrossFiltDFs():
        #print (len(layout.children))
        print ('executes here on update')#, exchange_df)
 
+    def update_code(self):
+        """
+        update for the code selection
+        """
+        self.code_df = df_obs[df_obs['code'] == code.value].dropna()
+
+    def update_exchange(self):
+        """
+        update the exchange
+        """
+        self.exchange_df = self.code_df[self.code_df['exchange']== exchange.value].dropna()
 
     def update_element(self):
         print ('Updating element down selection for property')
-        #print (np.unique(struct_df['element']))
         self.elem_df = df_obs[df_obs['element'] == element.value].dropna()
-        #print (self.elem_df)
         self.plot_data = self.elem_df
-        source_data = pd.DataFrame(self.elem_df.to_dict(orient='list'))
-
 
     def update_struct(self):
-       print ('Updating struct down selection for element')
-       print ("struct.value",struct.value)
-
+       #print ('Updating struct down selection for element')
+       #print ("struct.value",struct.value)
        self.struct_df = self.elem_df[self.elem_df['structure'] == struct.value].dropna()
-
        self.plot_data = self.struct_df
-
        print ('finished callback to update layout')
 
 
     def update_prop(self):
-       print ('Updating struct down selection for element')
-       print (prop.value)
+       #print ('Updating struct down selection for element')
+       #print (prop.value)
        self.prop_df = self.struct_df[self.struct_df['property'] == prop.value].dropna()
        #print ('The final dict', self.prop_df.to_dict(orient='list'))
        self.plot_data = self.prop_df
 
+    def update_x(self):
+        """
+        update x-axis of plot
+        """
+        self.x = x
+
+    def update_y(self):
+        """
+        update y-axis of plot
+        """
+        self.y = y
 
     def update_crossfilter(self):
        print ('Triggering crossfilter')
        print (type(self.plot_data))
        print (np.unique(self.plot_data['property']))
        layout.children[3] = self.create_figure(self.plot_data)
+
+    def clear_crossfilter(self):
+        """
+        clear the figure and crossfilter
+        """
+        print ('Trigger clear')
+        self.struct_df = None
+        self.elem_df = None
+        self.prop_df = None
+        self.code_df = None
+        self.exchange_df = None
+        self.plot_data = None
+        layout.children[3] = self.create_figure(self.plot_data, datplot=False)
 
 
 def update():
@@ -340,6 +351,12 @@ def get_data(t1, t2):
 
 CF = CrossFiltDFs()
 #struct_options = list(np.unique(df_obs['structure']))
+code = Select(title='Code', value=codes[0], options=codes)
+code.on_change('value', lambda attr, old, new: CF.update_code())
+
+exchange = Select(title='ExchangeCorrelation', value=exchanges[0], options=exchanges)
+exchange.on_change('value', lambda attr, old, new: CF.update_exchange())
+
 struct = Select(title='Structure', value=structures[0], options=structures)
 struct.on_change('value', lambda attr, old, new: CF.update_struct())
 
@@ -364,27 +381,30 @@ prop.on_change('value', lambda attr, old, new: CF.update_prop())
 #exchange_df = crossfilter_by_tag(elem_df, {'property':prop.value})
 
 #prop = Select(title='Property', value='B', options=properties)
-#prop.on_change('value', update)
+#prop.on_change('value', update)ppl
 
 
-apply_crossfilter = Button(label='CrossFilter')
+apply_crossfilter = Button(label='CrossFilter and Plot')
 apply_crossfilter.on_click(CF.update_crossfilter)
 
+clean_crossfilter = Button(label='Clear')
+clean_crossfilter.on_click(CF.clear_crossfilter)
 # The plotter widgets
 
 x = Select(title='X-Axis', value='k-point', options=plottables)
-x.on_change('value', CF.update)
+x.on_change('value', lambda attr, old, new: CF.update_x())
 
 y = Select(title='Y-Axis', value='value', options=plottables)
-y.on_change('value', CF.update)
+y.on_change('value', lambda attr, old, new: CF.update_y())
 
 analyse_crossfilt = Button(label='PadeAnalysis')
 analyse_crossfilt.on_click(analysis_callback)
 
-
-struct_df = CF.crossfilter_by_tag(df_obs, {'structure':struct.value})
-elem_df = CF.crossfilter_by_tag(struct_df, {'element':element.value})
-prop_df = CF.crossfilter_by_tag(elem_df, {'property':prop.value})
+elem_df = CF.crossfilter_by_tag(df_obs, {'element':element.value})
+code_df = CF.crossfilter_by_tag(elem_df, {'code':code.value})
+exchange_df = CF.crossfilter_by_tag(code_df, {'exchange':exchange.value})
+struct_df = CF.crossfilter_by_tag(exchange_df, {'structure':struct.value})
+prop_df = CF.crossfilter_by_tag(struct_df, {'property':prop.value})
 
 CF_init = CrossFiltDFs(struct_df,elem_df,prop_df)
 
@@ -401,7 +421,7 @@ print ('executed till here')
 #color = Select(title='Color', value='None', options=['None'] )
 #color.on_change('value', update)
 
-controls = widgetbox([element, struct, prop, apply_crossfilter, x, y, analyse_crossfilt], width=200)
+controls = widgetbox([element, code, exchange, struct, prop, x, y, apply_crossfilter, analyse_crossfilt, clean_crossfilter], width=200)
 print ('Initial init figure data', type(CF_init.prop_df))
 layout = column(description, ptable, controls, CF_init.create_figure(CF_init.prop_df))
 
