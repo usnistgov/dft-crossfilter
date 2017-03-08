@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 
 from bokeh.layouts import row, widgetbox, column
-from bokeh.models import Select, Div, Column, HoverTool, ColumnDataSource, Button
+from bokeh.models import Select, Div, Column, HoverTool, ColumnDataSource, Button, CheckboxButtonGroup
 from bokeh.palettes import Spectral5
 from bokeh.plotting import curdoc, figure
 from bokeh.sampledata.periodic_table import elements
@@ -51,10 +51,10 @@ codes = list(np.unique(df_obs['code']))
 
 ############## Header Content from description.html  #################
 
-content_filename = join(dirname(__file__), "description.html")
+content_filename = join(dirname(__file__), "test_desc.html")
 
 description = Div(text=open(content_filename).read(),
-                  render_as_text=True, width=600)
+                  render_as_text=False, width=600)
 
 
 # periodic table widget
@@ -287,9 +287,9 @@ class CrossFiltDFs():
         """
         self.exchange_df = self.code_df[self.code_df['exchange']== exchange.value].dropna()
 
-    def update_element(self):
-        print ('Updating element down selection for property')
-        self.elem_df = df_obs[df_obs['element'] == element.value].dropna()
+    def update_element(self,new):
+        print ('Updating element down selection for property',element.active[0])
+        self.elem_df = df_obs[df_obs['element'] == _elements[element.active[0]] ].dropna()
         self.plot_data = self.elem_df
 
     def update_struct(self):
@@ -349,8 +349,8 @@ class CrossFiltDFs():
         print ('executed R script on crossfiltered data')
         layout.children[3] = self.create_figure(self.plot_data, datplot='Add', plot_type='plot_pade')
 
-#def update():
-#    pass
+def update():
+    pass
     #source_data = CF.plot_data
 
 # initialize the crossfilter instance
@@ -370,8 +370,10 @@ struct = Select(title='Structure', value=structures[0], options=structures)
 struct.on_change('value', lambda attr, old, new: CF.update_struct())
 
 #elem_options = list(np.unique(struct_df['element']))
-element = Select(title='Element', value=_elements[0], options=_elements)
-element.on_change('value', lambda attr, old, new: CF.update_element())
+element = CheckboxButtonGroup(labels=_elements, active=[1])
+element.on_click(CF.update_element)
+#element = Select(title='Element', value=_elements[0], options=_elements)
+#element.on_change('value', lambda attr, old, new: CF.update_element())
 
 
 #prop_options = list(np.unique(elem_df['property']))
@@ -409,7 +411,7 @@ y.on_change('value', lambda attr, old, new: CF.update_y())
 analyse_crossfilt = Button(label='PadeAnalysis')
 analyse_crossfilt.on_click(CF.analysis_callback)
 
-elem_df = CF.crossfilter_by_tag(df_obs, {'element':element.value})
+elem_df = CF.crossfilter_by_tag(df_obs, {'element':_elements[0]})
 code_df = CF.crossfilter_by_tag(elem_df, {'code':code.value})
 exchange_df = CF.crossfilter_by_tag(code_df, {'exchange':exchange.value})
 struct_df = CF.crossfilter_by_tag(exchange_df, {'structure':struct.value})
