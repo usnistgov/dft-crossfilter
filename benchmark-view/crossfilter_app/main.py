@@ -191,42 +191,43 @@ class CrossFiltDFs():
         return exchange_code_prop_elem_struct_df
 
 
-    def create_figure(self,dataset, datplot=True):
-
+    def create_figure(self,dataset,datplot='Init',plot_type=None):
+        """
+        figure and plot creation for a given dataset
+        TODO: enable support for multiple selection
+        refactor to a simple figure creator and
+        add helper functions for the plots
+        """
         kw = dict()
 
-        if datplot:
-          xs =dataset[x.value].values
-          ys = dataset[y.value].values
-          x_title = x.value.title()
-          y_title = y.value.title()
+        print (dataset)
+        if datplot=='Init':
+           # if data is to be plotted
+           xs =dataset[x.value].values
+           ys = dataset[y.value].values
+           self.xs_init = xs
+           self.ys_init = ys
+           x_title = x.value.title()
+           y_title = y.value.title()
 
+           kw['title'] = "%s vs %s" % (y_title, x_title)
 
-#    if x.value in continuous:
-#        kw['x_range'] = sorted(set(xs))
-#    print (type(kw['x_range']))
-#    if y.value in continuous:
-#        kw['y_range'] = sorted(set(ys))
-#    print (type(kw['y_range']))
-
-          kw['title'] = "%s vs %s" % (y_title, x_title)
-
-          if x.value=='k-point':
+           if x.value=='k-point':
               kw['x_axis_type'] = 'log'
 
-          elif x.value == 'perc_precisions' and y.value == 'perc_precisions':
+           elif x.value == 'perc_precisions' and y.value == 'perc_precisions':
               kw['x_axis_type'] = 'log'
               kw['y_axis_type'] = 'log'
 
-          p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,reset,hover', **kw)
-          p.xaxis.axis_label = x_title
+           p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,reset,hover', **kw)
+           p.xaxis.axis_label = x_title
 
-          p.yaxis.axis_label = y_title
+           p.yaxis.axis_label = y_title
 
 
     # sets the xaxis
-          if x.value in continuous:
-             p.xaxis.major_label_orientation = pd.np.pi / 4
+           if x.value in continuous:
+              p.xaxis.major_label_orientation = pd.np.pi / 4
 
           #if x.value == 'k-point':
         #    xs = [k**3 for k in xs]
@@ -239,10 +240,29 @@ class CrossFiltDFs():
     #if color.value != 'None':
     #    groups = pd.qcut(df[color.value].values, len(COLORS))
     #    c = [COLORS[xx] for xx in groups.codes]
-          p.scatter(x=xs, y=ys, line_color="white", alpha=1.0, hover_color='blue', hover_alpha=1.0)
-          return p
+           p.scatter(x=xs, y=ys, line_color="white", alpha=1.0, hover_color='blue', hover_alpha=1.0)
+           self.p = p
+           return self.p
+
+        elif datplot == 'Add':
+           # add a plot to figure, from statistical analysis
+           if plot_type == 'plot_pade':
+
+               pade_order = self.analysis_results['Order']
+               pade_extrapolate = self.analysis_results['Extrapolate']
+
+               # create precisions based on the extrapolate
+
+               xs = self.xs_init
+               ys = [abs(y-pade_extrapolate) for y in self.ys_init]
+
+               # print (xs,ys,len(xs),len(ys))
+
+               self.p.line(x=xs, y=ys, line_color="red", alpha=1.0, hover_color='blue', hover_alpha=1.0)
+               return self.p
 
         else:
+          # clear the figure by plotting an empty figure
           xs = []
           ys = []
           p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,reset,hover', **kw)
@@ -259,7 +279,7 @@ class CrossFiltDFs():
         """
         update for the code selection
         """
-        self.code_df = df_obs[df_obs['code'] == code.value].dropna()
+        self.code_df = self.elem_df[self.elem_df['code'] == code.value].dropna()
 
     def update_exchange(self):
         """
@@ -275,7 +295,7 @@ class CrossFiltDFs():
     def update_struct(self):
        #print ('Updating struct down selection for element')
        #print ("struct.value",struct.value)
-       self.struct_df = self.elem_df[self.elem_df['structure'] == struct.value].dropna()
+       self.struct_df = self.exchange_df[self.exchange_df['structure'] == struct.value].dropna()
        self.plot_data = self.struct_df
        print ('finished callback to update layout')
 
@@ -288,16 +308,10 @@ class CrossFiltDFs():
        self.plot_data = self.prop_df
 
     def update_x(self):
-        """
-        update x-axis of plot
-        """
-        self.x = x
+        pass
 
     def update_y(self):
-        """
-        update y-axis of plot
-        """
-        self.y = y
+        pass
 
     def update_crossfilter(self):
        print ('Triggering crossfilter')
@@ -316,41 +330,36 @@ class CrossFiltDFs():
         self.code_df = None
         self.exchange_df = None
         self.plot_data = None
-        layout.children[3] = self.create_figure(self.plot_data, datplot=False)
+        layout.children[3] = self.create_figure(self.plot_data)
 
+    def analysis_callback(self):
+        """
+        calls the Pade analysis on the current plot data
+        TODO:
+        NOTE: check if this is a data set that is a single scatter
+        FEATUREs that could be added: plot the Pade for multiple selections
+        """
+        print ('called Pade analysis')
+        # writes out the crossfiltered plot data on the server
+        crossfilt = self.plot_data[['k-point','value']]
+        crossfilt.columns=['Kpt','P']
+        crossfilt.to_csv('crossfilter_app/Rdata.csv')
+        os.system('Rscript crossfilter_app/non_err_weighted_nls.R')
+        self.analysis_results = pd.read_csv('crossfilter_app/Result.csv')
+        print ('executed R script on crossfiltered data')
+        layout.children[3] = self.create_figure(self.plot_data, datplot='Add', plot_type='plot_pade')
 
-def update():
-    source_data = CF.plot_data
+#def update():
+#    pass
+    #source_data = CF.plot_data
 
-def analysis_callback():
-
-    print ('called callback')
-
-    os.system('Rscript crossfilter_app/hennig_nls.R')
-    print ('executed R script on crossfiltered data')
-
-def load_ticker(ticker):
-    print ('calling load_ticker')
-    fname = join(DATA_DIR, 'table_%s.csv' % ticker.lower())
-    data = pd.read_csv(fname, header=None, parse_dates=['date'],
-                       names=['date', 'foo', 'o', 'h', 'l', 'c', 'v'])
-    data = data.set_index('date')
-    return pd.DataFrame({ticker: data.c, ticker+'_returns': data.c.diff()})
-
-def get_data(t1, t2):
-    print ('calling get_data')
-    df1 = load_ticker(t1)
-    df2 = load_ticker(t2)
-    data = pd.concat([df1, df2], axis=1)
-    data = data.dropna()
-    data['t1'] = data[t1]
-    data['t2'] = data[t2]
-    data['t1_returns'] = data[t1+'_returns']
-    data['t2_returns'] = data[t2+'_returns']
-    return data
-
+# initialize the crossfilter instance
 CF = CrossFiltDFs()
-#struct_options = list(np.unique(df_obs['structure']))
+
+# define the selection widgets for code, exchange,
+# TODO: enable widgets that support multi-selection
+# Elements selection widget from a periodic table
+
 code = Select(title='Code', value=codes[0], options=codes)
 code.on_change('value', lambda attr, old, new: CF.update_code())
 
@@ -398,7 +407,7 @@ y = Select(title='Y-Axis', value='value', options=plottables)
 y.on_change('value', lambda attr, old, new: CF.update_y())
 
 analyse_crossfilt = Button(label='PadeAnalysis')
-analyse_crossfilt.on_click(analysis_callback)
+analyse_crossfilt.on_click(CF.analysis_callback)
 
 elem_df = CF.crossfilter_by_tag(df_obs, {'element':element.value})
 code_df = CF.crossfilter_by_tag(elem_df, {'code':code.value})

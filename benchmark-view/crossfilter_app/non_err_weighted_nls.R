@@ -5,7 +5,7 @@ mydata = read.csv("crossfilter_app/Rdata.csv")  # Read CSV data file
 x<-mydata$Kpt         # Select the kpoints atom density
 y<-mydata$P
 
-dy<-mydata$P_err            # Select the ground state energy E0
+            # Select the ground state energy E0
 
 l  = length(x)              # Length of data set for down selection
 l1 = 3                      # Number of data points to be removed from beginning
@@ -19,7 +19,7 @@ orders = c()
 
 result <- tryCatch({
 # 1th order modified Pade
-m<-nlsLM(y~(a1*x)/(b0+x), start = list(a1=y[l], b0=1), subset = l1:l-l2, weights = x^3 * dy^-1)
+m<-nlsLM(y~(a1*x)/(b0+x), start = list(a1=y[l], b0=1), subset = l1:l-l2, weights = x^3)
 m1=m
 #par(mfrow=c(1,2))
 extrapol = coef(m)[1]
@@ -43,7 +43,7 @@ predicts[[length(predicts)+1]] <- predict(m)
 
 
 # 2nd order Pade
-m<-nlsLM(y~(a1*x+a2*x^2)/(b0+b1*x+x^2), start = list(a1 = coef(m)[1], a2 = coef(m)[1], b0 = coef(m)[2], b1 = 1.0), subset = l1:l-l2, weights = x^3 * dy^-1)
+m<-nlsLM(y~(a1*x+a2*x^2)/(b0+b1*x+x^2), start = list(a1 = coef(m)[1], a2 = coef(m)[1], b0 = coef(m)[2], b1 = 1.0), subset = l1:l-l2, weights = x^3)
 m2=m
 
 #par(mfrow=c(1,2))
@@ -63,7 +63,7 @@ predicts[[length(predicts)+1]] <- predict(m)
 
 
 # 3rd order Pade
-m<-nlsLM(y~(a0+a1*x+a2*x^2+a3*x^3)/(b0+b1*x+b2*x^2+x^3), start = list(a0 = coef(m)[1], a1 = coef(m)[2], a2 = coef(m)[3], a3 = coef(m)[3], b0 = coef(m)[4], b1 = coef(m)[5], b2 = 1.0), subset = l1:l-l2, weights = x^3 * dy^-1)
+m<-nlsLM(y~(a0+a1*x+a2*x^2+a3*x^3)/(b0+b1*x+b2*x^2+x^3), start = list(a0 = coef(m)[1], a1 = coef(m)[2], a2 = coef(m)[3], a3 = coef(m)[3], b0 = coef(m)[4], b1 = coef(m)[5], b2 = 1.0), subset = l1:l-l2, weights = x^3)
 m3=m
 #par(mfrow=c(1,2))
 extrapol = coef(m)[4]
@@ -83,7 +83,7 @@ predicts[[length(predicts)+1]] <- predict(m)
 
 
 # 4th order Pade
-m<-nlsLM(y~(a0+a1*x+a2*x^2+a3*x^3+a4*x^4)/(b0+b1*x+b2*x^2+b3*x^3+x^4), start = list(a0 = coef(m)[1], a1 = coef(m)[2], a2 = coef(m)[3], a3 = coef(m)[4], a4=coef(m)[4], b0 = coef(m)[5], b1 = coef(m)[6], b2 = coef(m)[7], b3 = 1.0), subset = l1:l-l2, weights = x^3 * dy^-1)
+m<-nlsLM(y~(a0+a1*x+a2*x^2+a3*x^3+a4*x^4)/(b0+b1*x+b2*x^2+b3*x^3+x^4), start = list(a0 = coef(m)[1], a1 = coef(m)[2], a2 = coef(m)[3], a3 = coef(m)[4], a4=coef(m)[4], b0 = coef(m)[5], b1 = coef(m)[6], b2 = coef(m)[7], b3 = 1.0), subset = l1:l-l2, weights = x^3)
 m4=m
 #par(mfrow=c(1,2))
 extrapol = coef(m)[5]
@@ -126,7 +126,7 @@ predicts
 errors
 #length(extrapolates)
 output  = data.frame(Order = orders, Extrapolate = extrapolates, Error=errors)# Precisions = list(precs), Predicts=list(predicts))
-write.csv(output, 'Result.csv')
+write.csv(output, 'crossfilter_app/Result.csv')
 
 
 pade1 <- function(x) {
