@@ -15,8 +15,7 @@ import datetime
 import random
 import string
 import os
-import _thread
-from io import StringIO
+from io import BytesIO
 import pandas as pd
 import tempfile
 
@@ -34,20 +33,22 @@ def home_reference_evaluate_data():
         if fk.request.files:
             file_obj = fk.request.files['file']
             file_name = file_obj.filename
-            dataObject = StringIO()
+            dataObject = BytesIO()
 
             head = RowModel.objects(index='0').first()
 
-            # tmp_csv = tempfile.NamedTemporaryFile(mode='w')
-            csv_path = ''
+            tmp_csv = tempfile.NamedTemporaryFile(delete=False)
+            content = file_obj.read().decode("UTF8")
+            tmp_csv.write(str(content))
+            csv_path = tmp_csv.name
             data = None
-            with tempfile.TemporaryDirectory() as tmpdirname:
-                csv_path = '{0}/{1}'.format(tmpdirname, file_name)
-                # print(csv_path)
-                with open(csv_path, 'w') as tmp_csv:
-                    content = file_obj.read().decode("UTF8")
-                    # print(content)
-                    tmp_csv.write(str(content))
+            # with tempfile.TemporaryDirectory() as tmpdirname:
+            #     csv_path = '{0}/{1}'.format(tmpdirname, file_name)
+            #     # print(csv_path)
+            #     with open(csv_path, 'w') as tmp_csv:
+            #         content = file_obj.read().decode("UTF8")
+            #         # print(content)
+            #         tmp_csv.write(str(content))
                 # with open(csv_path, 'r') as tmp_csv:
                 #     print(tmp_csv.read())
             # content = file_obj.read()
@@ -56,7 +57,7 @@ def home_reference_evaluate_data():
             # print("New file witten to tmp...")
             # print(tmp_csv.name)
 
-                data = pd.read_csv(str(csv_path))
+            data = pd.read_csv(str(csv_path))
             # print(data)
             print("Read in pandas")
 

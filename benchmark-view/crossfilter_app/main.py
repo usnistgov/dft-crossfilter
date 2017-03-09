@@ -36,6 +36,10 @@ continuous = [x for x in columns if x not in discrete]
 
 plottables =  ['k-point', 'value', 'perc_precisions']
 
+x_select = Select(title='X-Axis', value='k-point', options=plottables)
+
+y_select = Select(title='Y-Axis', value='value', options=plottables)
+
 non_plottables = [ x for x in columns if x not in plottables ] # for aggregates
 
 structures = list(np.unique(df_obs['structure']))
@@ -203,19 +207,19 @@ class CrossFiltDFs():
         print (dataset)
         if datplot=='Init':
            # if data is to be plotted
-           xs =dataset[x.value].values
-           ys = dataset[y.value].values
+           xs =dataset[x_select.value].values
+           ys = dataset[y_select.value].values
            self.xs_init = xs
            self.ys_init = ys
-           x_title = x.value.title()
-           y_title = y.value.title()
+           x_title = x_select.value.title()
+           y_title = y_select.value.title()
 
            kw['title'] = "%s vs %s" % (y_title, x_title)
 
-           if x.value=='k-point':
+           if x_select.value=='k-point':
               kw['x_axis_type'] = 'log'
 
-           elif x.value == 'perc_precisions' and y.value == 'perc_precisions':
+           elif x_select.value == 'perc_precisions' and y_select.value == 'perc_precisions':
               kw['x_axis_type'] = 'log'
               kw['y_axis_type'] = 'log'
 
@@ -226,7 +230,7 @@ class CrossFiltDFs():
 
 
     # sets the xaxis
-           if x.value in continuous:
+           if x_select.value in continuous:
               p.xaxis.major_label_orientation = pd.np.pi / 4
 
           #if x.value == 'k-point':
@@ -402,11 +406,9 @@ clean_crossfilter = Button(label='Clear')
 clean_crossfilter.on_click(CF.clear_crossfilter)
 # The plotter widgets
 
-x = Select(title='X-Axis', value='k-point', options=plottables)
-x.on_change('value', lambda attr, old, new: CF.update_x())
+x_select.on_change('value', lambda attr, old, new: CF.update_x())
 
-y = Select(title='Y-Axis', value='value', options=plottables)
-y.on_change('value', lambda attr, old, new: CF.update_y())
+y_select.on_change('value', lambda attr, old, new: CF.update_y())
 
 analyse_crossfilt = Button(label='PadeAnalysis')
 analyse_crossfilt.on_click(CF.analysis_callback)
@@ -432,7 +434,7 @@ print ('executed till here')
 #color = Select(title='Color', value='None', options=['None'] )
 #color.on_change('value', update)
 
-controls = widgetbox([element, code, exchange, struct, prop, x, y, apply_crossfilter, analyse_crossfilt, clean_crossfilter], width=200)
+controls = widgetbox([element, code, exchange, struct, prop, x_select, y_select, apply_crossfilter, analyse_crossfilt, clean_crossfilter], width=200)
 print ('Initial init figure data', type(CF_init.prop_df))
 layout = column(description, ptable, controls, CF_init.create_figure(CF_init.prop_df))
 
