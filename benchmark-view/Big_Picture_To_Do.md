@@ -1,8 +1,7 @@
 What we want to do in this branch:
 
-  "create a flask app using the new bokeh server that runs on Apache and can render an Iframe from Shiny R"
-
-    - which uses bokeh's crossfilter model classes (that makes use of pandas dataframe tools)
+  create a flask app using the new bokeh server that runs on Apache and can render an Iframe from Shiny R
+    - which uses bokehs crossfilter model classes (that makes use of pandas dataframe tools)
       to crossfilter data
     - use the new bokeh server to interact directly with the REST api of benchmark-db
     - use Shiny R to create html that can be Iframed into python served bokeh app for the data analysis.

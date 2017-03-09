@@ -15,3 +15,5 @@ attrs:
         grid_line_alpha: .3
     Title:
         text_color: "white"
+    Hover:
+        text_color: "black"

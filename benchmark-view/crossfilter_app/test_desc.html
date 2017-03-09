@@ -1,0 +1,194 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <title>DFT Benchmarking Collaborative Data Analytics</title>
+  <!--<link rel="stylesheet" type="text/css" id="theme" href="../../nist_page/base_nist_home_elements/css/style.css" /> -->
+  <script>
+      function add(ev) {
+          var elt_name = (ev.target.id + "-");
+          var formulabox = document.getElementById("FormulaBox");
+          var oldformula = formulabox.value;
+          if (oldformula.indexOf(elt_name) != -1) {
+              formulabox.value = oldformula.replace(elt_name,"");
+              document.getElementById(ev.target.id).style.backgroundColor = "#454343";
+          } else {
+              formulabox.value = (oldformula + elt_name);
+              document.getElementById(ev.target.id).style.backgroundColor = "#fcb040";
+          }
+      }
+  </script>
+  <script async="" src="https://www.google-analytics.com/analytics.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <!--<div class="dead_element" style="left: 50px; top: 180px;" id="H">H</div>
+  <div class="dead_element" style="left: 50px; top: 235px;" id="Li">Li</div>
+  <div class="dead_element" style="left: 50px; top: 290px;" id="Na">Na</div>
+  <div class="dead_element" style="left: 50px; top: 345px;" id="K">K</div>
+  <div class="dead_element" style="left: 50px; top: 400px;" id="Rb">Rb</div>
+  <div class="dead_element" style="left: 50px; top: 455px;" id="Cs">Cs</div>
+
+  <div class="dead_element" style="left: 105px; top: 235px;" id="Be">Be</div>
+  <div class="dead_element" style="left: 105px; top: 290px;" id="Mg">Mg</div>
+  <div class="dead_element" style="left: 105px; top: 345px;" id="Ca">Ca</div>
+  <div class="dead_element" style="left: 105px; top: 400px;" id="Sr">Sr</div>
+  <div class="dead_element" style="left: 105px; top: 455px;" id="Ba">Ba</div>
+
+  <div class="live_element" style="left: 160px; top: 345px;" id="Sc" onclick="add(event)">Sc</div>
+  <div class="live_element" style="left: 160px; top: 400px;" id="Y" onclick="add(event)">Y</div>
+  <div class="placeholder" style="left: 160px; top: 455px;" id="La_placeholder">La</div>
+  <div class="dead_element" style="left: 160px; top: 530px;" id="La">La</div>
+  <div class="dead_element" style="left: 160px; top: 585px;" id="Ac">Ac</div>
+
+  <div class="live_element" style="left: 215px; top: 345px;" id="Ti" onclick="add(event)">Ti</div>
+  <div class="live_element" style="left: 215px; top: 400px;" id="Zr" onclick="add(event)">Zr</div>
+  <div class="live_element" style="left: 215px; top: 455px;" id="Hf" onclick="add(event)">Hf</div>
+  <div class="dead_element" style="left: 215px; top: 530px;" id="Ce">Ce</div>
+  <div class="dead_element" style="left: 215px; top: 585px;" id="Th">Th</div>
+
+  <div class="live_element" style="left: 270px; top: 345px;" id="V" onclick="add(event)">V</div>
+  <div class="live_element" style="left: 270px; top: 400px;" id="Nb" onclick="add(event)">Nb</div>
+  <div class="live_element" style="left: 270px; top: 455px;" id="Ta" onclick="add(event)">Ta</div>
+  <div class="dead_element" style="left: 270px; top: 530px;" id="Pr">Pr</div>
+  <div class="dead_element" style="left: 270px; top: 585px;" id="Pa">Pa</div>
+
+  <div class="live_element" style="left: 325px; top: 345px;" id="Cr" onclick="add(event)">Cr</div>
+  <div class="live_element" style="left: 325px; top: 400px;" id="Mo" onclick="add(event)">Mo</div>
+  <div class="live_element" style="left: 325px; top: 455px;" id="W" onclick="add(event)">W</div>
+  <div class="dead_element" style="left: 325px; top: 530px;" id="Nd">Nd</div>
+  <div class="dead_element" style="left: 325px; top: 585px;" id="U">U</div>
+
+  <div class="live_element" style="left: 380px; top: 345px;" id="Mn" onclick="add(event)">Mn</div>
+  <div class="live_element" style="left: 380px; top: 400px;" id="Tc" onclick="add(event)">Tc</div>
+  <div class="live_element" style="left: 380px; top: 455px;" id="Re" onclick="add(event)">Re</div>
+  <div class="dead_element" style="left: 380px; top: 530px;" id="Pm">Pm</div>
+  <div class="dead_element" style="left: 380px; top: 585px;" id="Np">Np</div>
+
+  <div class="live_element" style="left: 435px; top: 345px;" id="Fe" onclick="add(event)">Fe</div>
+  <div class="live_element" style="left: 435px; top: 400px;" id="Ru" onclick="add(event)">Ru</div>
+  <div class="live_element" style="left: 435px; top: 455px;" id="Os" onclick="add(event)">Os</div>
+  <div class="live_element" style="left: 435px; top: 530px;" id="Sm" onclick="add(event)">Sm</div>
+  <div class="live_element" style="left: 435px; top: 585px;" id="Pu" onclick="add(event)">Pu</div>
+
+  <div class="live_element" style="left: 490px; top: 345px;" id="Co" onclick="add(event)">Co</div>
+  <div class="live_element" style="left: 490px; top: 400px;" id="Rh" onclick="add(event)">Rh</div>
+  <div class="live_element" style="left: 490px; top: 455px;" id="Ir" onclick="add(event)">Ir</div>
+  <div class="dead_element" style="left: 490px; top: 530px;" id="Eu">Eu</div>
+  <div class="dead_element" style="left: 490px; top: 585px;" id="Am">Am</div>
+
+  <div class="live_element" style="left: 545px; top: 345px;" id="Ni" onclick="add(event)">Ni</div>
+  <div class="live_element" style="left: 545px; top: 400px;" id="Pd" onclick="add(event)">Pd</div>
+  <div class="live_element" style="left: 545px; top: 455px;" id="Pt" onclick="add(event)">Pt</div>
+  <div class="dead_element" style="left: 545px; top: 530px;" id="Gd">Gd</div>
+  <div class="dead_element" style="left: 545px; top: 585px;" id="Cm">Cm</div>
+
+  <div class="live_element" style="left: 600px; top: 345px;" id="Cu" onclick="add(event)">Cu</div>
+  <div class="live_element" style="left: 600px; top: 400px;" id="Ag" onclick="add(event)">Ag</div>
+  <div class="live_element" style="left: 600px; top: 455px;" id="Au" onclick="add(event)">Au</div>
+  <div class="dead_element" style="left: 600px; top: 530px;" id="Tb">Tb</div>
+  <div class="dead_element" style="left: 600px; top: 585px;" id="Bk">Bk</div>
+
+  <div class="live_element" style="left: 655px; top: 345px;" id="Zn" onclick="add(event)">Zn</div>
+  <div class="live_element" style="left: 655px; top: 400px;" id="Cd" onclick="add(event)">Cd</div>
+  <div class="live_element" style="left: 655px; top: 455px;" id="Hg" onclick="add(event)">Hg</div>
+  <div class="dead_element" style="left: 655px; top: 530px;" id="Dy">Dy</div>
+  <div class="dead_element" style="left: 655px; top: 585px;" id="Cf">Cf</div>
+
+  <div class="dead_element" style="left: 710px; top: 235px;" id="B">B</div>
+  <div class="live_element" style="left: 710px; top: 290px;" id="Al" onclick="add(event)">Al</div>
+  <div class="dead_element" style="left: 710px; top: 345px;" id="Ga">Ga</div>
+  <div class="dead_element" style="left: 710px; top: 400px;" id="In">In</div>
+  <div class="dead_element" style="left: 710px; top: 455px;" id="Tl">Tl</div>
+  <div class="dead_element" style="left: 710px; top: 530px;" id="Ho">Ho</div>
+  <div class="dead_element" style="left: 710px; top: 585px;" id="Es">Es</div>
+
+  <div class="dead_element" style="left: 765px; top: 235px;" id="C">C</div>
+  <div class="dead_element" style="left: 765px; top: 290px;" id="Si">Si</div>
+  <div class="dead_element" style="left: 765px; top: 345px;" id="Ge">Ge</div>
+  <div class="dead_element" style="left: 765px; top: 400px;" id="Sn">Sn</div>
+  <div class="dead_element" style="left: 765px; top: 455px;" id="Pb">Pb</div>
+  <div class="dead_element" style="left: 765px; top: 530px;" id="Er">Er</div>
+  <div class="dead_element" style="left: 765px; top: 585px;" id="Fm">Fm</div>
+
+  <div class="dead_element" style="left: 820px; top: 235px;" id="N">N</div>
+  <div class="dead_element" style="left: 820px; top: 290px;" id="P">P</div>
+  <div class="dead_element" style="left: 820px; top: 345px;" id="As">As</div>
+  <div class="dead_element" style="left: 820px; top: 400px;" id="Sb">Sb</div>
+  <div class="dead_element" style="left: 820px; top: 455px;" id="Bi">Bi</div>
+  <div class="dead_element" style="left: 820px; top: 530px;" id="Tm">Tm</div>
+  <div class="dead_element" style="left: 820px; top: 585px;" id="Md">Md</div>
+
+  <div class="dead_element" style="left: 875px; top: 235px;" id="O">O</div>
+  <div class="dead_element" style="left: 875px; top: 290px;" id="S">S</div>
+  <div class="dead_element" style="left: 875px; top: 345px;" id="Se">Se</div>
+  <div class="dead_element" style="left: 875px; top: 400px;" id="Te">Te</div>
+  <div class="dead_element" style="left: 875px; top: 455px;" id="Po">Po</div>
+  <div class="dead_element" style="left: 875px; top: 530px;" id="Yb">Yb</div>
+  <div class="dead_element" style="left: 875px; top: 585px;" id="No">No</div>
+
+  <div class="dead_element" style="left: 930px; top: 235px;" id="F">F</div>
+  <div class="dead_element" style="left: 930px; top: 290px;" id="Cl">Cl</div>
+  <div class="dead_element" style="left: 930px; top: 345px;" id="Br">Br</div>
+  <div class="dead_element" style="left: 930px; top: 400px;" id="I">I</div>
+  <div class="dead_element" style="left: 930px; top: 455px;" id="At">At</div>
+  <div class="dead_element" style="left: 930px; top: 530px;" id="Lu">Lu</div>
+  <div class="dead_element" style="left: 930px; top: 585px;" id="Lr">Lr</div>
+
+  <div class="dead_element" style="left: 985px; top: 180px;" id="He">He</div>
+  <div class="dead_element" style="left: 985px; top: 235px;" id="Ne">Ne</div>
+  <div class="dead_element" style="left: 985px; top: 290px;" id="Ar">Ar</div>
+  <div class="dead_element" style="left: 985px; top: 345px;" id="Kr">Kr</div>
+  <div class="dead_element" style="left: 985px; top: 400px;" id="Xe">Xe</div>
+  <div class="dead_element" style="left: 985px; top: 455px;" id="Rn">Rn</div>
+  <!--<h1><img src="../static/images/NIST.png" alt="example graphic"/></h1>
+  <h1><img src="../static/images/MGI.png" alt="example graphic"/></h1>
+  <meta name="description" content="website description" />
+  <meta name="keywords" content="website keywords, website keywords" />
+  <meta http-equiv="content-type" content="text/html; charset=windows-1252" />
+  <link rel="stylesheet" type="text/css" id="theme" href="../static/css/style.css" />
+  modernizr enables HTML5 elements and feature detects -->
+</head>
+
+<body>
+  <!--<script type="text/javascript" src="../static/js/modernizr-1.5.min.js"></script> -->
+  <div id="main">
+    <header>
+      <div id="logo">
+        <div id="logo_text">
+          <!-- class="logo_colour", allows you to change the colour of the text -->
+          <h2>Crossfilter Data. Analyze. Infer.</h2>
+        </div>
+      </div>
+      <!--<nav>
+        <ul class="sf-menu" id="nav">
+          <li><a href="nist_home.html">Home</a></li>
+          <li class=""><a href="about.html">About</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </nav> -->
+    </header>
+    <div id="site_content">
+      <div class="content">
+        <h1>Welcome to Collaborative Data Analysis</h1>
+        <div class="content_item">
+          <p> Here is a collaborative web platform hosted by the Hennig Materials Theory Group for the Materials Genome Initiative to use high throughput frameworks to benchmark DFT methods.
+          </p>
+        </div>
+      </div>
+    </div>
+    <footer>
+      <p><a href="index.html">Home</a> | <a href="examples.html">Examples</a> | <a href="page.html">A Page</a> | <a href="another_page.html">Another Page</a> | <a href="contact.html">Contact Us</a></p>
+      <p>Copyright &copy; CSS3_one | <a href="http://www.css3templates.co.uk">design from css3templates.co.uk</a></p>
+    </footer>
+  </div>
+  <!-- javascript at the bottom for fast page loading -->
+  <!--<script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/jquery.easing-sooper.js"></script>
+  <script type="text/javascript" src="js/jquery.sooperfish.js"></script>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('ul.sf-menu').sooperfish();
+    });
+  </script> -->
+</body>
+</html>
