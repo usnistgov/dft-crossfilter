@@ -159,7 +159,7 @@ class CrossFilter(Model):
             print "what is understood from the df", self._df
 
             # initialize a "pure" and filtered data source based on df
-            data_source = self.query("http://10.200.94.205/bench/col/dict/all")
+            data_source = self.query("http://10.200.94.205/bench/v1/col/dict/all")
             print "query successful"
             kwargs['head'] = ColumnDataSource(data=self._df)
             kwargs['data'] = ColumnDataSource(data=data_source)
@@ -832,7 +832,7 @@ class CrossFilter(Model):
 
         """
         if len(self.filter_widgets) == 0:
-            df = self.query('/bench/col/dict/bare')
+            df = self.query('/bench/v1/col/dict/bare')
         else:
             df = self.df
 
@@ -923,7 +923,7 @@ class CrossFilter(Model):
 
                 # discrete
                 if metadata['type'] == 'DiscreteColumn':
-                    description = self.query('/bench/desc/single/{0}'.format(col))
+                    description = self.query('/bench/v1/desc/single/{0}'.format(col))
                     options = description['options']
                     select = MultiSelect.create(
                         name=col,
@@ -932,7 +932,7 @@ class CrossFilter(Model):
 
                 # continuous
                 else:
-                    col_query = self.query('/bench/col/single/{0}'.format(col))
+                    col_query = self.query('/bench/v1/col/single/{0}'.format(col))
                     histogram = col_query['values']
                     source = make_histogram_source(histogram)
                     self.filter_sources[col] = source
@@ -955,7 +955,7 @@ class CrossFilter(Model):
         """
         descriptors = []
 
-        descriptions = self.query('/bench/desc/all')
+        descriptions = self.query('/bench/v1/desc/all')
         if descriptions:
             for description in descriptions:
                 # # print (description
