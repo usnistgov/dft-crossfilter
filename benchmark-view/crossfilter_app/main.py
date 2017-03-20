@@ -4,10 +4,11 @@ from os.path import dirname, join
 import pandas as pd
 import numpy as np
 
+from bokeh.io import curdoc
 from bokeh.layouts import row, widgetbox, column
 from bokeh.models import Select, Div, Column, HoverTool, ColumnDataSource, Button, CheckboxButtonGroup
 from bokeh.palettes import Spectral5
-from bokeh.plotting import curdoc, figure
+from bokeh.plotting import figure
 from bokeh.sampledata.periodic_table import elements
 
 
@@ -203,75 +204,74 @@ class CrossFiltDFs():
         add helper functions for the plots
         """
         kw = dict()
+        x_title = x_select.value.title()
+        y_title = y_select.value.title()
 
-        print (dataset)
+        kw['title'] = "%s vs %s" % (y_title, x_title)
+
+        #if x_select.value=='k-point':
+        kw['x_axis_type'] = 'log'
+
+        if x_select.value == 'perc_precisions' and y_select.value == 'perc_precisions':
+          kw['y_axis_type'] = 'log'
+
+        self.p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,reset,hover', **kw)
+
+        # sets the axes
+        self.p.xaxis.axis_label = x_title
+        self.p.yaxis.axis_label = y_title
+
+
+        if x_select.value in continuous:
+          self.p.xaxis.major_label_orientation = pd.np.pi / 4
+
+
+        #print (dataset)
         if datplot=='Init':
            # if data is to be plotted
            xs =dataset[x_select.value].values
            ys = dataset[y_select.value].values
            self.xs_init = xs
            self.ys_init = ys
-           x_title = x_select.value.title()
-           y_title = y_select.value.title()
 
-           kw['title'] = "%s vs %s" % (y_title, x_title)
-
-           if x_select.value=='k-point':
-              kw['x_axis_type'] = 'log'
-
-           elif x_select.value == 'perc_precisions' and y_select.value == 'perc_precisions':
-              kw['x_axis_type'] = 'log'
-              kw['y_axis_type'] = 'log'
-
-           p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,reset,hover', **kw)
-           p.xaxis.axis_label = x_title
-
-           p.yaxis.axis_label = y_title
-
-
-    # sets the xaxis
-           if x_select.value in continuous:
-              p.xaxis.major_label_orientation = pd.np.pi / 4
-
-          #if x.value == 'k-point':
-        #    xs = [k**3 for k in xs]
-    #sz = 9
-    #if size.value != 'None':
-    #    groups = pd.qcut(df[size.value].values, len(SIZES))
-    #    sz = [SIZES[xx] for xx in groups.codes]
-
-    #c = "#31AADE"
-    #if color.value != 'None':
-    #    groups = pd.qcut(df[color.value].values, len(COLORS))
-    #    c = [COLORS[xx] for xx in groups.codes]
-           p.scatter(x=xs, y=ys, line_color="white", alpha=1.0, hover_color='blue', hover_alpha=1.0)
-           self.p = p
+           self.p.scatter(x=xs, y=ys)#, alpha=1.0, hover_color='blue', hover_alpha=1.0)
            return self.p
 
         elif datplot == 'Add':
            # add a plot to figure, from statistical analysis
            if plot_type == 'plot_pade':
 
-               pade_order = self.analysis_results['Order']
-               pade_extrapolate = self.analysis_results['Extrapolate']
+               #pade_order = self.analysis_results['Order']
+               #pade_extrapolate = self.analysis_results['Extrapolate']
+               #print (pade_extrapolate, float(pade_extrapolate))
 
                # create precisions based on the extrapolate
-
-               xs = self.xs_init
-               ys = [abs(y-pade_extrapolate) for y in self.ys_init]
-
+               #print (self.add_data)
+               xs = self.add_data[0]
+               ys = self.add_data[1]#[abs(y-pade_extrapolate) for y in self.ys_init]
+               #print (ys)
                # print (xs,ys,len(xs),len(ys))
-
-               self.p.line(x=xs, y=ys, line_color="red", alpha=1.0, hover_color='blue', hover_alpha=1.0)
+               print ("Plots a line supposedly")
+               #print (len(self.ys_init), len(ys))
+               l = min([len(self.ys_init), len(ys), len(self.xs_init),len(xs)])
+               #self.plot_layout.scatter(x=self.xs_init[0:l], y=self.ys_init[0:l])#, alpha=1.0, hover_color='blue', hover_alpha=1.0)
+               #print (type(self.plot_layout))
+               #self.p.self.plot
+               self.p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,reset,hover', **kw)
+               print('executes till re-figure')
+               self.p.circle(x=self.xs_init,y=self.ys_init)
+               print('executes till circle')
+               self.p.line(x=xs[0:l], y=ys[0:l])
+               print('executes till line')
                return self.p
 
         else:
           # clear the figure by plotting an empty figure
           xs = []
           ys = []
-          p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,reset,hover', **kw)
-          p.scatter(x=xs, y=ys, line_color="white", alpha=1.0, hover_color='blue', hover_alpha=1.0)
-          return p
+          self.p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,reset,hover', **kw)
+          self.p.scatter(x=xs, y=ys)#, alpha=1.0, hover_color='blue', hover_alpha=1.0)
+          return self.p
 
 # The crossfilter widgets
     def update(self, attr, old, new):
@@ -350,8 +350,14 @@ class CrossFiltDFs():
         crossfilt.to_csv('crossfilter_app/Rdata.csv')
         os.system('Rscript crossfilter_app/non_err_weighted_nls.R')
         self.analysis_results = pd.read_csv('crossfilter_app/Result.csv')
+        self.predict_results = pd.read_csv('crossfilter_app/Predicts.csv')
+        print (self.predict_results)
+        self.add_data = [ list(self.xs_init), list(self.predict_results['Preds....c.predict.m2..']) ]
+        #ext_values = list(self.analysis_results['Extrapolate'])
+        #error_values = list(self.analysis_results['Error'])
+        #self.ext_min_error = ext_values[error_values.index(min(error_values))]
         print ('executed R script on crossfiltered data')
-        layout.children[3] = self.create_figure(self.plot_data, datplot='Add', plot_type='plot_pade')
+        layout.children[3] = self.create_figure(self.add_data, datplot='Add', plot_type='plot_pade')
 
 def update():
     pass
@@ -373,38 +379,17 @@ exchange.on_change('value', lambda attr, old, new: CF.update_exchange())
 struct = Select(title='Structure', value=structures[0], options=structures)
 struct.on_change('value', lambda attr, old, new: CF.update_struct())
 
-#elem_options = list(np.unique(struct_df['element']))
 element = CheckboxButtonGroup(labels=_elements, active=[1])
 element.on_click(CF.update_element)
-#element = Select(title='Element', value=_elements[0], options=_elements)
-#element.on_change('value', lambda attr, old, new: CF.update_element())
 
-
-#prop_options = list(np.unique(elem_df['property']))
 prop = Select(title='Property', value=properties[0], options=properties)
 prop.on_change('value', lambda attr, old, new: CF.update_prop())
-
-
-#code_options = list(np.unique(prop_df['code']))
-#code = Select(title='Code', value=code_options[0], options=code_options)
-#code.on_change('value', update_code)
-#code_df = crossfilter_by_tag(prop_df, {'property':prop.value})
-
-#exchange_options = list(np.unique(code_df['exchange']))
-#exchange = Select(title='ExchangeCorrelation', value=exchange_options[0], options=exchange_options)
-#exchange.on_change('value', update)
-#exchange_df = crossfilter_by_tag(elem_df, {'property':prop.value})
-
-#prop = Select(title='Property', value='B', options=properties)
-#prop.on_change('value', update)ppl
-
 
 apply_crossfilter = Button(label='CrossFilter and Plot')
 apply_crossfilter.on_click(CF.update_crossfilter)
 
 clean_crossfilter = Button(label='Clear')
 clean_crossfilter.on_click(CF.clear_crossfilter)
-# The plotter widgets
 
 x_select.on_change('value', lambda attr, old, new: CF.update_x())
 
