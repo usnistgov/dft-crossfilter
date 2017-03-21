@@ -102,8 +102,21 @@ source = ColumnDataSource(
     )
 )
 # plot the periodic layout
-ptable = figure(title="Periodic Table", tools="hover,save",
+name = source.data["name"]
+
+hover = HoverTool(tooltips = [
+    ("index", "$index"),
+    ("(x,y)", "($x, $y)"),
+    ("name", "@name"),
+    ("atomic number", "@atomic_number"),
+    ("type", "@type"),
+    ("atomic mass", "@mass"),
+    ("electronic configuration", "@electronic"),
+])
+
+ptable = figure(title="Periodic Table", tools=[hover],
            x_range=group_range, y_range=list(reversed(romans)))
+
 ptable.plot_width = 1200
 ptable.toolbar_location = None
 ptable.outline_line_color = None
@@ -133,13 +146,14 @@ ptable.text(x="symx", y="massy", text="mass",
 
 ptable.grid.grid_line_color = None
 
-ptable.select_one(HoverTool).tooltips = [
-    ("name", "@name"),
-    ("atomic number", "@atomic_number"),
-    ("type", "@type"),
-    ("atomic mass", "@mass"),
-    ("electronic configuration", "@electronic"),
-]
+
+#ptable.select_one(HoverTool).tooltips = [
+#    ("name", "@name"),
+#    ("atomic number", "@atomic_number"),
+#    ("type", "@type"),
+#    ("atomic mass", "@mass"),
+#    ("electronic configuration", "@electronic"),
+#]
 
 
 ######### CREATES CROSSFILTER ##########################
@@ -253,15 +267,15 @@ class CrossFiltDFs():
                # print (xs,ys,len(xs),len(ys))
                print ("Plots a line supposedly")
                #print (len(self.ys_init), len(ys))
-               l = min([len(self.ys_init), len(ys), len(self.xs_init),len(xs)])
+               #l = min([len(self.ys_init), len(ys), len(self.xs_init),len(xs)])
                #self.plot_layout.scatter(x=self.xs_init[0:l], y=self.ys_init[0:l])#, alpha=1.0, hover_color='blue', hover_alpha=1.0)
                #print (type(self.plot_layout))
                #self.p.self.plot
-               self.p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,reset,hover', **kw)
+               self.p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,reset,box_zoom, hover', **kw)
                print('executes till re-figure')
                self.p.circle(x=self.xs_init,y=self.ys_init)
                print('executes till circle')
-               self.p.line(x=xs[0:l], y=ys[0:l])
+               self.p.line(x=xs, y=ys)
                print('executes till line')
                return self.p
 
@@ -269,7 +283,7 @@ class CrossFiltDFs():
           # clear the figure by plotting an empty figure
           xs = []
           ys = []
-          self.p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,reset,hover', **kw)
+          self.p = figure(plot_height=600, plot_width=800, tools='pan,reset,hover,box_zoom', **kw)
           self.p.scatter(x=xs, y=ys)#, alpha=1.0, hover_color='blue', hover_alpha=1.0)
           return self.p
 
@@ -350,13 +364,19 @@ class CrossFiltDFs():
         crossfilt.to_csv('crossfilter_app/Rdata.csv')
         os.system('Rscript crossfilter_app/non_err_weighted_nls.R')
         self.analysis_results = pd.read_csv('crossfilter_app/Result.csv')
-        self.predict_results = pd.read_csv('crossfilter_app/Predicts.csv')
-        print (self.predict_results)
-        self.add_data = [ list(self.xs_init), list(self.predict_results['Preds....c.predict.m2..']) ]
-        #ext_values = list(self.analysis_results['Extrapolate'])
-        #error_values = list(self.analysis_results['Error'])
-        #self.ext_min_error = ext_values[error_values.index(min(error_values))]
+        #self.add_data = [ list(self.xs_init), list(self.predict_results['Preds....c.predict.m2..']) ]
+        ext_values = list(self.analysis_results['Extrapolate....extrapolates'])
+        error_values = list(self.analysis_results['Error....errors'])
+        self.ext_min_error = ext_values[error_values.index(min(error_values))]
         print ('executed R script on crossfiltered data')
+        if error_values.index(min(error_values))==0:
+            self.predict_results = pd.read_csv('crossfilter_app/Pade1.csv')
+            self.add_data = [list(self.predict_results['Px....x_plot']), list(self.predict_results['Py....pade1.x_plot.'])]
+        elif error_values.index(min(error_values))==1:
+            self.predict_results = pd.read_csv('crossfilter_app/Pade2.csv')
+            self.add_data = [list(self.predict_results['Px....x_plot']), list(self.predict_results['Py....pade2.x_plot.'])]
+
+        print ('ADD DATA', self.add_data)
         layout.children[3] = self.create_figure(self.add_data, datplot='Add', plot_type='plot_pade')
 
 def update():
