@@ -88,11 +88,6 @@ elems_colorpair = {'H':'nc','He':'nc',
                  }
 elems_colorpair.update( { key:'nc' for key in list(elements['symbol']) if key not in list(elems_colorpair.keys()) } )
 
-#elems_done = {"calculated": ['Sc', 'Ti' ,'V' , 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', \
-#                             'Al', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', \
-#                             'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg']}
-#elems_done["not_calculated"]= [e for e in elements['symbol'] if e not in elems_done["calculated"]]
-
 
 print ([ colormap[elems_colorpair[x]] for x in elements['symbol'] ])
 
@@ -119,45 +114,9 @@ source = ColumnDataSource(
     )
 )
 
-#source = ColumnDataSource(
-#      data = dict(
-#              group=[str(x) for x in elements["group"]],
-#              period =[str(x) for x in elements["period"]],
-#              sym=elements["symbol"],
-#              name=elements["name"],
-#              atomic_number=elements["atomic number"],
-#              B=['B' for x in elements["atomic mass"]],
-#              dB=['dB' for x in elements["atomic mass"]],
-#              V0=['V0' for x in elements["atomic mass"]],
-#              E0=['E0' for x in elements["atomic mass"]]
-#       )
-#)
-
-
-
 # plot the periodic layout
 name = source.data["name"]
 B = source.data["B"]
-#print (name,B)
-
-#hover = HoverTool()
-
-#hover.tooltips = OrderedDict( [("name", "@name"),
-#    ("atomic number", "@atomic_number"),
-#    ("B", "@B"),
-#    ("dB", "@dB"),
-#    ("V0", '@V0'),
-#    ("E0", "@E0")]
-#)
-
-#hover = HoverTool(tooltips = OrderedDict([
-#    ("name", "@name"),
-#    ("atomic number", "@atomic_number"),
-#    ("B", "@B"),
-#    ("dB", "@dB"),
-#    ("V0", '@V0'),
-#    ("E0", "@E0")
-#]))
 
 ptable = figure(title="Periodic Table", tools="hover",
            x_range=group_range, y_range=list(reversed(romans)))
@@ -229,31 +188,100 @@ class CrossFiltDFs():
         return df[df[col]==spec]
 
 
-
-    def crossfilter_by_choices(struct_choice, elem_choice, prop_choice, code_choice,exchange_choice):
+    def update_ptable(self):
         """
-        crossfilter control based on UI choices.
-        crossfilters and returns the dataframe after crossfiltering
-
-        may be deprecated
+        update the periodic table highlighted elements
         """
-        # first selects the element
-        struct_df  = df_obs[df_obs['structure']==struct_choice]
-        #print (struct_df)
-        print ('elem',elem_choice)
-        elem_struct_df = struct_df[struct_df['element']==elem_choice]
-        print (elem_struct_df)
-        prop_elem_struct_df = elem_struct_df[elem_struct_df['property']==prop_choice]
-        print(prop_elem_struct_df)
-        code_prop_elem_struct_df = \
-           prop_elem_struct_df[prop_elem_struct_df['code']==code_choice]
-        print (code_prop_elem_struct_df)
-        exchange_code_prop_elem_struct_df =\
-        code_prop_elem_struct_df[code_prop_elem_struct_df['exchange']==exchange_choice]
-        print ('this is the crossfilt being returned', exchange_code_prop_elem_struct_df)
-        return exchange_code_prop_elem_struct_df
+        from bokeh.sampledata.periodic_table import elements
+        romans = ["I", "II", "III", "IV", "V", "VI", "VII"]
+
+        elements["atomic mass"] = elements["atomic mass"].astype(str)
+
+        elements["period"] = [x for x in elements.period]
+        elements = elements[elements.group != "-"]
+
+        group_range = [str(x) for x in range(1, 19)]
+        print ('reaches colormap def')
+        colormap = {
+                     "c"        : "#ffa07a",
+                     "nc"       : "#A9A9A9"
+                   }
+        elems_colorpair = {}
+        
+        elems_colorpair.update( { key:'c' for key in np.unique(list(self.struct_df['element'])) } )
+        elems_colorpair.update( { key:'nc' for key in list(elements['symbol']) if key not in list(elems_colorpair.keys()) } )
 
 
+        print ([ colormap[elems_colorpair[x]] for x in elements['symbol'] ])
+
+        source = ColumnDataSource(
+              data=dict(
+                     group=[str(x) for x in elements["group"]],
+                     period=[str(y) for y in elements["period"]],
+                     symx=[str(x)+":0.1" for x in elements["group"]],
+                     numbery=[str(x)+":0.8" for x in elements["period"]],
+                     massy=[str(x)+":0.15" for x in elements["period"]],
+                     namey=[str(x)+":0.3" for x in elements["period"]],
+                     sym=elements["symbol"],
+                     name=elements["name"],
+                     cpk=elements["CPK"],
+                     atomic_number=elements["atomic number"],
+                     electronic=elements["electronic configuration"],
+                     mass=elements["atomic mass"],
+                     B=['B' for x in elements["atomic mass"]],
+                     dB=['dB' for x in elements["atomic mass"]],
+                     V0=['V0' for x in elements["atomic mass"]],
+                     E0=['E0' for x in elements["atomic mass"]],
+                     type=elements["metal"],
+                     type_color=[ colormap[elems_colorpair[x]] for x in elements['symbol'] ],
+                      )
+                                 )
+
+        # plot the periodic layout
+        name = source.data["name"]
+        B = source.data["B"]
+
+        ptable = figure(title="Periodic Table", tools="hover",
+           x_range=group_range, y_range=list(reversed(romans)))
+
+        ptable.plot_width = 1200
+        ptable.toolbar_location = None
+        ptable.outline_line_color = None
+
+        ptable.rect("group", "period", 0.9, 0.9, source=source,
+                    fill_alpha=0.3, color='type_color')
+
+        text_props = {
+           "source": source,
+           "angle": 0,
+           "color": "black",
+           "text_align": "left",
+           "text_baseline": "middle"
+                     }
+ 
+        ptable.text(x="symx", y="period", text="sym",
+        text_font_style="bold", text_font_size="15pt", **text_props)
+
+        ptable.text(x="symx", y="numbery", text="atomic_number",
+        text_font_size="9pt", **text_props)
+
+        ptable.text(x="symx", y="namey", text="name",
+        text_font_size="6pt", **text_props)
+
+        ptable.text(x="symx", y="massy", text="mass",
+        text_font_size="5pt", **text_props)
+
+        ptable.grid.grid_line_color = None
+
+
+        ptable.select_one(HoverTool).tooltips = [
+        ("name", "@name"),
+        ("atomic number", "@atomic_number"),
+        ("atomic mass", "@mass"),
+        ("electronic configuration", "@electronic")]
+
+        return ptable
+    
     def create_figure(self,dataset,datplot='Init',plot_type=None):
         """
         figure and plot creation for a given dataset
@@ -343,23 +371,30 @@ class CrossFiltDFs():
         """
         update for the code selection
         """
-        self.code_df = self.elem_df[self.elem_df['code'] == code.value].dropna()
+        print ('update code')
+        self.code_df = df_obs[df_obs['code'] == code.value].dropna()
 
     def update_exchange(self):
         """
         update the exchange
         """
+        print ('update exchange')
         self.exchange_df = self.code_df[self.code_df['exchange']== exchange.value].dropna()
 
     def update_element(self,new):
         print ('Updating element down selection for property',element.active[0])
-        self.elem_df = df_obs[df_obs['element'] == _elements[element.active[0]] ].dropna()
+        self.elem_df = self.struct_df[self.struct_df['element'] == _elements[element.active[0]] ].dropna()
         self.plot_data = self.elem_df
 
     def update_struct(self):
        #print ('Updating struct down selection for element')
        #print ("struct.value",struct.value)
        self.struct_df = self.exchange_df[self.exchange_df['structure'] == struct.value].dropna()
+       print ('Updating ptable with structure selection')
+       layout.children[1] =  self.update_ptable()
+       elem_checkbox= CheckboxButtonGroup(labels=np.unique(list(self.struct_df['element'])), active=[1])
+       controls.children[3] = elem_checkbox
+       
        self.plot_data = self.struct_df
        print ('finished callback to update layout')
 
@@ -367,7 +402,7 @@ class CrossFiltDFs():
     def update_prop(self):
        #print ('Updating struct down selection for element')
        #print (prop.value)
-       self.prop_df = self.struct_df[self.struct_df['property'] == prop.value].dropna()
+       self.prop_df = self.elem_df[self.elem_df['property'] == prop.value].dropna()
        #print ('The final dict', self.prop_df.to_dict(orient='list'))
        self.plot_data = self.prop_df
 
@@ -464,13 +499,13 @@ y_select.on_change('value', lambda attr, old, new: CF.update_y())
 analyse_crossfilt = Button(label='PadeAnalysis')
 analyse_crossfilt.on_click(CF.analysis_callback)
 
-elem_df = CF.crossfilter_by_tag(df_obs, {'element':_elements[0]})
-code_df = CF.crossfilter_by_tag(elem_df, {'code':code.value})
+code_df = CF.crossfilter_by_tag(df_obs, {'code':code.value})
 exchange_df = CF.crossfilter_by_tag(code_df, {'exchange':exchange.value})
 struct_df = CF.crossfilter_by_tag(exchange_df, {'structure':struct.value})
-prop_df = CF.crossfilter_by_tag(struct_df, {'property':prop.value})
+elem_df = CF.crossfilter_by_tag(struct_df, {'element':_elements[0]})
+prop_df = CF.crossfilter_by_tag(elem_df, {'property':prop.value})
 
-CF_init = CrossFiltDFs(struct_df,elem_df,prop_df)
+CF_init = CrossFiltDFs(code_df,exchange_df,struct_df,elem_df,prop_df)
 
 print ('executed till here')
 
@@ -478,15 +513,8 @@ print ('executed till here')
 #z.on_change('value', update)
 
 
-
-#size = Select(title='Size', value='None', options=['None'] )
-#size.on_change('value', update)
-
-#color = Select(title='Color', value='None', options=['None'] )
-#color.on_change('value', update)
-
-controls = widgetbox([element, code, exchange, struct, prop, x_select, y_select, apply_crossfilter, analyse_crossfilt, clean_crossfilter], width=200)
-print ('Initial init figure data', type(CF_init.prop_df))
+controls = widgetbox([code, exchange, struct, element, prop, x_select, y_select, apply_crossfilter, analyse_crossfilt, clean_crossfilter], width=200)
+#print ('Initial init figure data', type(CF_init.prop_df))
 layout = column(description, ptable, controls, CF_init.create_figure(CF_init.prop_df))
 
 curdoc().add_root(layout)
