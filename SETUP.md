@@ -55,10 +55,16 @@ To test it out go to [Data description dictionnary](http://0.0.0.0:7000/bench/de
 
     $ conda install bokeh
     $ cd benchmark-view
+    $ conda install -c r r-essentials
+    $ R 
+    $ > install.packages('minpack.lm')
+    close R
     $ bokeh serve crossfilter_app --show
 
 This should automatically start a browser window with the app rendered on it, this can be
-host - port tuned later.
+host - port tuned later to serve on nginx
+
+
 
 (old setup which may not be necessary now)
 At this point you are set for the data access part. For the visualizatio part

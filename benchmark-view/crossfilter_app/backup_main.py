@@ -1,14 +1,13 @@
 import os
 from os.path import dirname, join
 
-from collections import OrderedDict
 import pandas as pd
 import numpy as np
 
 from bokeh.io import curdoc
 from bokeh.layouts import row, widgetbox, column
 from bokeh.models import Select, Div, Column, HoverTool, ColumnDataSource, Button, CheckboxButtonGroup
-#from bokeh.palettes import Spectral5
+from bokeh.palettes import Spectral5
 from bokeh.plotting import figure
 from bokeh.sampledata.periodic_table import elements
 
@@ -73,28 +72,16 @@ elements = elements[elements.group != "-"]
 
 group_range = [str(x) for x in range(1, 19)]
 
-
 colormap = {
-    "c"        : "#ffa07a",
-    "nc"       : "#A9A9A9"
+    "alkali metal"         : "#a6cee3",
+    "alkaline earth metal" : "#1f78b4",
+    "halogen"              : "#fdbf6f",
+    "metal"                : "#b2df8a",
+    "metalloid"            : "#33a02c",
+    "noble gas"            : "#bbbb88",
+    "nonmetal"             : "#baa2a6",
+    "transition metal"     : "#e08e79",
 }
-
-elems_colorpair = {'H':'nc','He':'nc',
-                   'Li':'nc','Be':'nc','B':'nc','C':'nc', 'N':'nc', 'O':'nc','F':'nc','Ne':'nc',
-                   'Na':'nc','Mg':'nc', 'Al':'c','Si':'nc','P':'nc','S':'nc','Cl':'nc','Ar':'nc',
-                   'K': 'nc', 'Ca':'nc','Sc':'c', 'Ti':'c' ,'V':'c' , 'Cr':'c', 'Mn':'c', 'Fe':'c', 'Co':'c', 'Ni':'c', 'Cu':'c', 'Zn':'c',
-                   'Rb':'nc', 'Sr':'nc','Y':'c', 'Zr':'c', 'Nb':'c', 'Mo':'c', 'Tc':'c', 'Ru':'c', 'Rh':'c', 'Pd':'c', 'Ag':'c','Cd': 'c',
-                   'Cs':'nc', 'Ba':'nc', 'Hf':'c', 'Ta':'c', 'W':'c', 'Re':'c', 'Os':'c', 'Ir':'c', 'Pt':'c', 'Au':'c', 'Hg':'c'
-                 }
-elems_colorpair.update( { key:'nc' for key in list(elements['symbol']) if key not in list(elems_colorpair.keys()) } )
-
-#elems_done = {"calculated": ['Sc', 'Ti' ,'V' , 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', \
-#                             'Al', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', \
-#                             'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg']}
-#elems_done["not_calculated"]= [e for e in elements['symbol'] if e not in elems_done["calculated"]]
-
-
-print ([ colormap[elems_colorpair[x]] for x in elements['symbol'] ])
 
 source = ColumnDataSource(
     data=dict(
@@ -110,56 +97,24 @@ source = ColumnDataSource(
         atomic_number=elements["atomic number"],
         electronic=elements["electronic configuration"],
         mass=elements["atomic mass"],
-        B=['B' for x in elements["atomic mass"]],
-        dB=['dB' for x in elements["atomic mass"]],
-        V0=['V0' for x in elements["atomic mass"]],
-        E0=['E0' for x in elements["atomic mass"]],
         type=elements["metal"],
-        type_color=[ colormap[elems_colorpair[x]] for x in elements['symbol'] ],
+        type_color=[colormap[x] for x in elements["metal"]],
     )
 )
-
-#source = ColumnDataSource(
-#      data = dict(
-#              group=[str(x) for x in elements["group"]],
-#              period =[str(x) for x in elements["period"]],
-#              sym=elements["symbol"],
-#              name=elements["name"],
-#              atomic_number=elements["atomic number"],
-#              B=['B' for x in elements["atomic mass"]],
-#              dB=['dB' for x in elements["atomic mass"]],
-#              V0=['V0' for x in elements["atomic mass"]],
-#              E0=['E0' for x in elements["atomic mass"]]
-#       )
-#)
-
-
-
 # plot the periodic layout
 name = source.data["name"]
-B = source.data["B"]
-#print (name,B)
 
-#hover = HoverTool()
+hover = HoverTool(tooltips = [
+    ("index", "$index"),
+    ("(x,y)", "($x, $y)"),
+    ("name", "@name"),
+    ("atomic number", "@atomic_number"),
+    ("type", "@type"),
+    ("atomic mass", "@mass"),
+    ("electronic configuration", "@electronic"),
+])
 
-#hover.tooltips = OrderedDict( [("name", "@name"),
-#    ("atomic number", "@atomic_number"),
-#    ("B", "@B"),
-#    ("dB", "@dB"),
-#    ("V0", '@V0'),
-#    ("E0", "@E0")]
-#)
-
-#hover = HoverTool(tooltips = OrderedDict([
-#    ("name", "@name"),
-#    ("atomic number", "@atomic_number"),
-#    ("B", "@B"),
-#    ("dB", "@dB"),
-#    ("V0", '@V0'),
-#    ("E0", "@E0")
-#]))
-
-ptable = figure(title="Periodic Table", tools="hover",
+ptable = figure(title="Periodic Table", tools=[hover],
            x_range=group_range, y_range=list(reversed(romans)))
 
 ptable.plot_width = 1200
@@ -167,7 +122,7 @@ ptable.toolbar_location = None
 ptable.outline_line_color = None
 
 ptable.rect("group", "period", 0.9, 0.9, source=source,
-       fill_alpha=0.3, color='type_color')
+       fill_alpha=0.6, color="type_color")
 
 text_props = {
     "source": source,
@@ -192,12 +147,13 @@ ptable.text(x="symx", y="massy", text="mass",
 ptable.grid.grid_line_color = None
 
 
-ptable.select_one(HoverTool).tooltips = [
-    ("name", "@name"),
-    ("atomic number", "@atomic_number"),
-    ("atomic mass", "@mass"),
-    ("electronic configuration", "@electronic"),
-]
+#ptable.select_one(HoverTool).tooltips = [
+#    ("name", "@name"),
+#    ("atomic number", "@atomic_number"),
+#    ("type", "@type"),
+#    ("atomic mass", "@mass"),
+#    ("electronic configuration", "@electronic"),
+#]
 
 
 ######### CREATES CROSSFILTER ##########################
