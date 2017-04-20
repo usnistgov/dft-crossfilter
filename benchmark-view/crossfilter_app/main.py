@@ -13,7 +13,7 @@ from bokeh.plotting import figure
 from bokeh.sampledata.periodic_table import elements
 
 
-df_obs = pd.read_csv('./Data/Data.csv')
+df_obs = pd.read_csv('./crossfilter_app/Data/Data.csv')
 print ('read df_obs')
 # single reference standard this can be an on request
 # basis input as well
@@ -68,7 +68,13 @@ romans = ["I", "II", "III", "IV", "V", "VI", "VII"]
 
 elements["atomic mass"] = elements["atomic mass"].astype(str)
 
-elements["period"] = [romans[x-1] for x in elements.period]
+print("Table---")
+print(elements.period)
+print("---Table")
+try:
+  elements["period"] = [romans[x-1] for x in elements.period]
+except:
+  pass
 elements = elements[elements.group != "-"]
 
 group_range = [str(x) for x in range(1, 19)]

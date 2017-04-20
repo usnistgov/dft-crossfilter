@@ -5,6 +5,10 @@
     mongo_ssh_host: ""
   when: ansible_ssh_host == 'localhost'
 
+- name: mongodb permissions
+  shell: chown -R mongodb:mongodb /var/lib/mongodb
+  become: true
+
 - name: copy mongodb.conf template
   template: src={{ inventory_dir }}/mongodb.conf.j2 dest=/etc/mongodb.conf
   become: true
