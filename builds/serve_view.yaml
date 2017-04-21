@@ -3,11 +3,12 @@
   shell: "if pgrep bokeh; then pkill bokeh; fi"
   become: true
 
+- name: show path
+  shell: echo "cd {{ app_path }}; {{ env_path }}/bokeh serve crossfilter_app/ --log-level=debug --host {{ ansible_ssh_host }}:{{ mapped_port }} --host 0.0.0.0:{{ mapped_port }} --port 5700 &"
+
 - name: run server
   # shell: "cd {{ app_path }}; {{ env_path }}/bokeh serve crossfilter_app/ --port 5700 &"
-  # shell: "cd {{ app_path }}; {{ env_path }}/bokeh serve crossfilter_app/ --log-level=debug --host {{ ansible_ssh_host }}:{{ mapped_port }} --host 0.0.0.0:{{ mapped_port }} --port 5700 &"
-  shell: "cd {{ app_path }}; bokeh serve crossfilter_app/ --log-level=debug --host {{ ansible_ssh_host }}:{{ mapped_port }} --host 0.0.0.0:{{ mapped_port }} --port 5700 &"
-
+  shell: "cd {{ app_path }}; {{ env_path }}/bokeh serve crossfilter_app/ --log-level=debug --host {{ ansible_ssh_host }}:{{ mapped_port }} --host 0.0.0.0:{{ mapped_port }} --port 5700 &"
   # shell: "cd {{ app_path }}; {{ env_path }}/bokeh serve crossfilter_app/ --show&"
   # --allow-websocket-origin 0.0.0.0:{{ mapped_port }}
   become: true
