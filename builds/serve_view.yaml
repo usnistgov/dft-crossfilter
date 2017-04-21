@@ -1,6 +1,6 @@
 ## Deploy a production environment using Nginx
 - name: kill current server
-  shell: killall bokeh
+  shell: "if pgrep bokeh; then pkill bokeh; fi"
   become: true
 
 - name: run server

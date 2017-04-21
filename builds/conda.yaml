@@ -31,4 +31,4 @@
   shell: "{{ conda }} env update -n {{ benchmark_env }} --file {{ benchmark_path }}/builds/requirements.yaml"
 
 - name: install R stuff
-  shell: "{{ conda }} install -c r r-essentials"
+  shell: "yes | {{ conda }} install -c r r-essentials"

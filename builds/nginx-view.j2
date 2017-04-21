@@ -3,8 +3,8 @@ server {
     server_name 0.0.0.0 localhost {{ ansible_ssh_host }};
     rewrite ^/$ /crossfilter_app/ redirect;
 
-    access_log  /tmp/bokeh.access.log;
-    error_log   /tmp/bokeh.error.log debug;
+    access_log  {{ access_log }};
+    error_log   {{ error_log }} debug;
 
     location / {
         proxy_pass http://localhost:5700;
