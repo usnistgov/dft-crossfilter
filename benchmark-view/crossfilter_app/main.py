@@ -8,29 +8,24 @@ import numpy as np
 from bokeh.io import curdoc
 from bokeh.layouts import row, widgetbox, column
 from bokeh.models import Select, Div, Column, HoverTool, ColumnDataSource, Button, CheckboxButtonGroup
-#from bokeh.palettes import Spectral5
 from bokeh.plotting import figure
 from bokeh.sampledata.periodic_table import elements
 
 
-df_obs = pd.read_csv('./Data/Data.csv')
+df_obs = pd.read_csv('./crossfilter_app/Data/DataC.csv')
 print ('read df_obs')
+
 # single reference standard this can be an on request
 # basis input as well
 #df_ref = pd.read_json('./Data/Ref.json')
 
-# dividing data into gneeral discretes, continuous and quantileables
+# dividing data into gneeral discretes and continuous
 
 columns = sorted(df_obs.columns) #+ sorted(df.columns)
-#print columns
-#print ('Here', [(x, df_obs[x].dtype) for x in columns])
-#print ([(x,df[x].dtype) for x in sorted(df.columns)])
-discrete = [x for x in columns if df_obs[x].dtype == object] #+ [x for x in columns if df_obs[x].dtype == object]
-#print ('and here', discrete)
+discrete = [x for x in columns if df_obs[x].dtype == object] 
+
 continuous = [x for x in columns if x not in discrete]
-#print continuous
-#quantileable = [x for x in continuous if len(df[x].unique()) > 20]
-#print quantileable
+
 ####################################################################
 
 ##divide data into plottables and non plottables (aggregates or 3D plottables) ,
@@ -46,7 +41,7 @@ non_plottables = [ x for x in columns if x not in plottables ] # for aggregates
 
 structures = list(np.unique(df_obs['structure']))
 _elements = list(np.unique(df_obs['element']))
-print (_elements)
+#print (_elements)
 exchanges = list(np.unique(df_obs['exchange']))
 properties = list(np.unique(df_obs['property']))
 codes = list(np.unique(df_obs['code']))
@@ -68,7 +63,13 @@ romans = ["I", "II", "III", "IV", "V", "VI", "VII"]
 
 elements["atomic mass"] = elements["atomic mass"].astype(str)
 
-elements["period"] = [romans[x-1] for x in elements.period]
+print("Table---")
+#print(elements.period)
+print("---Table")
+try:
+  elements["period"] = [romans[x-1] for x in elements.period]
+except:
+  pass
 elements = elements[elements.group != "-"]
 
 group_range = [str(x) for x in range(1, 19)]
@@ -101,15 +102,15 @@ source = ColumnDataSource(
         namey=[str(x)+":0.3" for x in elements["period"]],
         sym=elements["symbol"],
         name=elements["name"],
-        cpk=elements["CPK"],
+#        cpk=elements["CPK"],
         atomic_number=elements["atomic number"],
-        electronic=elements["electronic configuration"],
-        mass=elements["atomic mass"],
+#        electronic=elements["electronic configuration"],
+#        mass=elements["atomic mass"],
         B=['B' for x in elements["atomic mass"]],
         dB=['dB' for x in elements["atomic mass"]],
         V0=['V0' for x in elements["atomic mass"]],
         E0=['E0' for x in elements["atomic mass"]],
-        type=elements["metal"],
+#        type=elements["metal"],
         type_color=[ colormap[elems_colorpair[x]] for x in elements['symbol'] ],
     )
 )
@@ -121,10 +122,11 @@ B = source.data["B"]
 ptable = figure(title="Periodic Table", tools="hover",
            x_range=group_range, y_range=list(reversed(romans)))
 
-ptable.plot_width = 1200
+ptable.plot_width = 1500
 ptable.toolbar_location = None
 ptable.outline_line_color = None
 
+ptable.background_fill_color = 'white'
 ptable.rect("group", "period", 0.9, 0.9, source=source,
        fill_alpha=0.3, color='type_color')
 
@@ -137,25 +139,19 @@ text_props = {
 }
 
 ptable.text(x="symx", y="period", text="sym",
-       text_font_style="bold", text_font_size="15pt", **text_props)
+       text_font_style="bold", text_font_size="22pt", **text_props)
 
 ptable.text(x="symx", y="numbery", text="atomic_number",
        text_font_size="9pt", **text_props)
-
-ptable.text(x="symx", y="namey", text="name",
-       text_font_size="6pt", **text_props)
-
-ptable.text(x="symx", y="massy", text="mass",
-       text_font_size="5pt", **text_props)
 
 ptable.grid.grid_line_color = None
 
 
 ptable.select_one(HoverTool).tooltips = [
     ("name", "@name"),
-    ("atomic number", "@atomic_number"),
-    ("atomic mass", "@mass"),
-    ("electronic configuration", "@electronic"),
+    ("V0 (A^3 per atom)", "@V0"),
+    ("B (GPa)", "@B"),
+    ("dB/dP", "@dB")
 ]
 
 
@@ -169,6 +165,7 @@ class CrossFiltDFs():
 
     def __init__(self,struct_df=None,elem_df=None,prop_df=None,\
                  plot_data=None, code_df=None, exchange_df=None):
+
         self.struct_df = struct_df
         self.elem_df = elem_df
         self.prop_df = prop_df
@@ -207,7 +204,32 @@ class CrossFiltDFs():
                      "nc"       : "#A9A9A9"
                    }
         elems_colorpair = {}
-        
+
+        B_extrapol_props = {}
+        dB_extrapol_props = {}
+        V0_extrapol_props = {}
+        E0_extrapol_props = {}
+
+        for e in elements["symbol"]:
+            for p in np.unique(list(self.struct_df['property'])):
+               if e in np.unique(list(self.struct_df['element'])):
+                 #print (p,e,'avail')
+                 e_struct = self.struct_df[self.struct_df['element']==e]
+                 p_e_struct = e_struct[e_struct['property']==p]
+                 elem_prop = {e: np.unique(list(p_e_struct['extrapolate']))[0]}
+               else:
+                 elem_prop = {e:'xxx'}
+
+               if p=='B':
+                 B_extrapol_props.update(elem_prop)
+               elif p=='dB':
+                 dB_extrapol_props.update(elem_prop)
+               elif p=='v0':
+                 print ('V0', elem_prop)
+                 V0_extrapol_props.update(elem_prop)
+               elif p =='E0':
+                 E0_extrapol_props.update(elem_prop)
+                 
         elems_colorpair.update( { key:'c' for key in np.unique(list(self.struct_df['element'])) } )
         elems_colorpair.update( { key:'nc' for key in list(elements['symbol']) if key not in list(elems_colorpair.keys()) } )
 
@@ -224,27 +246,26 @@ class CrossFiltDFs():
                      namey=[str(x)+":0.3" for x in elements["period"]],
                      sym=elements["symbol"],
                      name=elements["name"],
-                     cpk=elements["CPK"],
+#                     cpk=elements["CPK"],
                      atomic_number=elements["atomic number"],
-                     electronic=elements["electronic configuration"],
-                     mass=elements["atomic mass"],
-                     B=['B' for x in elements["atomic mass"]],
-                     dB=['dB' for x in elements["atomic mass"]],
-                     V0=['V0' for x in elements["atomic mass"]],
-                     E0=['E0' for x in elements["atomic mass"]],
+#                     electronic=elements["electronic configuration"],
+                     B=[B_extrapol_props[x] for x in elements["symbol"]],
+                     dB=[dB_extrapol_props[x] for x in elements["symbol"]],
+                     V0=[V0_extrapol_props[x] for x in elements["symbol"]],
+                     E0=[E0_extrapol_props[x] for x in elements["symbol"]],
                      type=elements["metal"],
                      type_color=[ colormap[elems_colorpair[x]] for x in elements['symbol'] ],
                       )
                                  )
 
         # plot the periodic layout
-        name = source.data["name"]
-        B = source.data["B"]
+        #name = source.data["name"]
+        #B = source.data["B"]
 
         ptable = figure(title="Periodic Table", tools="hover",
            x_range=group_range, y_range=list(reversed(romans)))
-
-        ptable.plot_width = 1200
+        ptable.background_fill_color='white'
+        ptable.plot_width = 1500
         ptable.toolbar_location = None
         ptable.outline_line_color = None
 
@@ -260,26 +281,25 @@ class CrossFiltDFs():
                      }
  
         ptable.text(x="symx", y="period", text="sym",
-        text_font_style="bold", text_font_size="15pt", **text_props)
+        text_font_style="bold", text_font_size="22pt", **text_props)
 
         ptable.text(x="symx", y="numbery", text="atomic_number",
         text_font_size="9pt", **text_props)
 
-        ptable.text(x="symx", y="namey", text="name",
-        text_font_size="6pt", **text_props)
+#        ptable.text(x="symx", y="namey", text="name",
+#        text_font_size="6pt", **text_props)
 
-        ptable.text(x="symx", y="massy", text="mass",
-        text_font_size="5pt", **text_props)
+#        ptable.text(x="symx", y="massy", text="mass",
+#        text_font_size="5pt", **text_props)
 
         ptable.grid.grid_line_color = None
 
 
         ptable.select_one(HoverTool).tooltips = [
         ("name", "@name"),
-        ("atomic number", "@atomic_number"),
-        ("atomic mass", "@mass"),
-        ("electronic configuration", "@electronic")]
-
+        ("V0 (A^3 per atom)", "@V0"),
+        ("B (GPa)", "@B"),
+        ("dB/dP", "@dB")]
         return ptable
     
     def create_figure(self,dataset,datplot='Init',plot_type=None):
@@ -290,8 +310,22 @@ class CrossFiltDFs():
         add helper functions for the plots
         """
         kw = dict()
-        x_title = x_select.value.title()
-        y_title = y_select.value.title()
+
+        x_title = x_select.value.title() + ' Density per atom'
+        
+        # hack for labels now 
+
+        if isinstance(dataset,pd.DataFrame):
+          if np.unique(list(dataset['property']))[0]=='B':
+             y_title = 'Bulk Modulus (GPa) '+y_select.value.title()
+          elif np.unique(list(dataset['property']))[0]=='dB':
+             y_title = 'dB/dP '+y_select.value.title()
+          elif np.unique(list(dataset['property']))[0]=='v0':
+             y_title = 'Volume per atom (A^3) '+y_select.value.title()
+          elif np.unique(list(dataset['property']))[0]=='E0':
+             y_title = 'DFT Energy per atom (eV/atom) '+y_select.value.title()
+        else:
+             y_title = 'Pade Prediction'
 
         kw['title'] = "%s vs %s" % (y_title, x_title)
 
@@ -301,7 +335,7 @@ class CrossFiltDFs():
         if x_select.value == 'perc_precisions' and y_select.value == 'perc_precisions':
           kw['y_axis_type'] = 'log'
 
-        self.p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,reset,hover', **kw)
+        self.p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,box_zoom,reset,hover', **kw)
 
         # sets the axes
         self.p.xaxis.axis_label = x_title
@@ -343,11 +377,12 @@ class CrossFiltDFs():
                #self.plot_layout.scatter(x=self.xs_init[0:l], y=self.ys_init[0:l])#, alpha=1.0, hover_color='blue', hover_alpha=1.0)
                #print (type(self.plot_layout))
                #self.p.self.plot
-               self.p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,reset,box_zoom, hover', **kw)
+               self.p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,box_zoom,reset,box_zoom, hover', **kw)
                print('executes till re-figure')
                self.p.circle(x=self.xs_init,y=self.ys_init)
                print('executes till circle')
-               self.p.line(x=xs, y=ys)
+               self.p.line(x=xs, y=ys, line_color='red')
+               #self.p.line_color='red'
                print('executes till line')
                return self.p
 
@@ -357,7 +392,7 @@ class CrossFiltDFs():
           # clear the figure by plotting an empty figure
           xs = []
           ys = []
-          self.p = figure(plot_height=600, plot_width=800, tools='pan,reset,hover,box_zoom', **kw)
+          self.p = figure(plot_height=600, plot_width=800, tools='pan,wheel_zoom,box_zoom,reset,hover', **kw)
           self.p.scatter(x=xs, y=ys)#, alpha=1.0, hover_color='blue', hover_alpha=1.0)
           return self.p
 
@@ -391,9 +426,9 @@ class CrossFiltDFs():
        #print ("struct.value",struct.value)
        self.struct_df = self.exchange_df[self.exchange_df['structure'] == struct.value].dropna()
        print ('Updating ptable with structure selection')
-       layout.children[1] =  self.update_ptable()
+       layout.children[2] =  self.update_ptable()
        elem_checkbox= CheckboxButtonGroup(labels=np.unique(list(self.struct_df['element'])), active=[1])
-       controls.children[3] = elem_checkbox
+       controls2.children[2] = elem_checkbox
        
        self.plot_data = self.struct_df
        print ('finished callback to update layout')
@@ -414,9 +449,9 @@ class CrossFiltDFs():
 
     def update_crossfilter(self):
        print ('Triggering crossfilter')
-       print (type(self.plot_data))
-       print (np.unique(self.plot_data['property']))
-       layout.children[3] = self.create_figure(self.plot_data)
+       #print (type(self.plot_data))
+       #print (np.unique(self.plot_data['property']))
+       layout.children[4] = self.create_figure(self.plot_data)
 
     def clear_crossfilter(self):
         """
@@ -429,7 +464,7 @@ class CrossFiltDFs():
         self.code_df = None
         self.exchange_df = None
         self.plot_data = None
-        layout.children[3] = self.create_figure(self.plot_data)
+        layout.children[4] = self.create_figure(self.plot_data)
 
     def analysis_callback(self):
         """
@@ -443,6 +478,7 @@ class CrossFiltDFs():
         crossfilt = self.plot_data[['k-point','value']]
         crossfilt.columns=['Kpt','P']
         crossfilt.to_csv('crossfilter_app/Rdata.csv')
+        print ('wrote out data file')
         os.system('Rscript crossfilter_app/non_err_weighted_nls.R')
         self.analysis_results = pd.read_csv('crossfilter_app/Result.csv')
         #self.add_data = [ list(self.xs_init), list(self.predict_results['Preds....c.predict.m2..']) ]
@@ -458,7 +494,7 @@ class CrossFiltDFs():
             self.add_data = [list(self.predict_results['Px....x_plot']), list(self.predict_results['Py....pade2.x_plot.'])]
 
         print ('ADD DATA', self.add_data)
-        layout.children[3] = self.create_figure(self.add_data, datplot='Add', plot_type='plot_pade')
+        layout.children[4] = self.create_figure(self.add_data, datplot='Add', plot_type='plot_pade')
 
 def update():
     pass
@@ -513,9 +549,10 @@ print ('executed till here')
 #z.on_change('value', update)
 
 
-controls = widgetbox([code, exchange, struct, element, prop, x_select, y_select, apply_crossfilter, analyse_crossfilt, clean_crossfilter], width=200)
+controls1 = widgetbox([code, exchange, struct], width=400)
+controls2 = widgetbox([element, prop, x_select, y_select, apply_crossfilter, analyse_crossfilt, clean_crossfilter], width=400)
 #print ('Initial init figure data', type(CF_init.prop_df))
-layout = column(description, ptable, controls, CF_init.create_figure(CF_init.prop_df))
+layout = column(description, controls1, ptable, controls2, CF_init.create_figure(CF_init.prop_df))
 
 curdoc().add_root(layout)
 curdoc().title = "DFT Benchmark"
