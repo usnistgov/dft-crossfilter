@@ -29,3 +29,6 @@
 
 - name: install required benchmarkdb packages
   shell: "{{ conda }} env update -n {{ benchmark_env }} --file {{ benchmark_path }}/builds/requirements.yaml"
+
+- name: install R stuff
+  shell: "yes | {{ conda }} install -c r r-essentials"

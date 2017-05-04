@@ -13,7 +13,7 @@ from bokeh.sampledata.periodic_table import elements
 
 
 df_obs = pd.read_csv('./crossfilter_app/Data/DataC.csv')
-print ('read df_obs')
+
 
 # single reference standard this can be an on request
 # basis input as well

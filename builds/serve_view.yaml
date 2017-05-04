@@ -1,0 +1,36 @@
+## Deploy a production environment using Nginx
+- name: kill current server
+  shell: "if pgrep bokeh; then pkill bokeh; fi"
+  become: true
+
+- name: show path
+  shell: echo "cd {{ app_path }}; {{ env_path }}/bokeh serve crossfilter_app/ --log-level=debug --host {{ ansible_ssh_host }}:{{ mapped_port }} --host 0.0.0.0:{{ mapped_port }} --port 5700 &"
+
+- name: run server
+  # shell: "cd {{ app_path }}; {{ env_path }}/bokeh serve crossfilter_app/ --port 5700 &"
+  shell: "cd {{ app_path }}; {{ env_path }}/bokeh serve crossfilter_app/ --log-level=debug --host {{ ansible_ssh_host }}:{{ mapped_port }} --host 0.0.0.0:{{ mapped_port }} --port 5700 &"
+  # shell: "cd {{ app_path }}; {{ env_path }}/bokeh serve crossfilter_app/ --show&"
+  # --allow-websocket-origin 0.0.0.0:{{ mapped_port }}
+  become: true
+
+- name: copy nginx template
+  template: src={{ inventory_dir }}/nginx-view.j2 dest=/etc/nginx/sites-available/{{ app_service_name }}
+  become: true
+
+- name: link files for nginx
+  file: src=/etc/nginx/sites-available/{{ app_service_name }} dest=/etc/nginx/sites-enabled/{{ app_service_name }} state=link
+  become: true
+
+- name: restart nginx
+  service: name=nginx state=restarted
+  become: true
+
+- name: enable port in ufw
+  ufw:
+    rule: allow
+    port: "{{ mapped_port }}"
+    proto: tcp
+  become: true
+
+- name: check that view is up and running
+  uri: url={{ test_path }}

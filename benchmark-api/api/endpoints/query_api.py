@@ -37,7 +37,7 @@ def home_reference_evaluate_data():
 
             head = RowModel.objects(index='0').first()
 
-            tmp_csv = tempfile.NamedTemporaryFile(delete=False)
+            tmp_csv = tempfile.NamedTemporaryFile(mode="w+", delete=False)
             content = file_obj.read().decode("UTF8")
             tmp_csv.write(str(content))
             csv_path = tmp_csv.name
@@ -83,14 +83,14 @@ def home_reference_evaluate_data():
             print("New data appended to old data...")
 
            
-            dataObject.write('%s\n'%header)
+            dataObject.write(str('%s\n'%header).encode("utf-8"))
 
             print("Head written to dataframe...")
 
             for row in RowModel.objects():
                 if int(row.index) > 0:
                     oneline = ','.join([str(v) for v in row.value])
-                    dataObject.write('%s\n'%oneline)
+                    dataObject.write(str('%s\n'%oneline).encode("utf-8"))
 
             print("New merged content written to dataframe...")
 
