@@ -16,5 +16,5 @@ attrs:
     Title:
         text_color: "white"
     Hover:
-        text_color: "blue"
-        fill_color: "white"
+        text_color: "red"
+        fill_color: "black"

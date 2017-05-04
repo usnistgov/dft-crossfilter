@@ -1,0 +1,54 @@
+{% load staticfiles %}
+
+<head>
+    <title>About</title>
+    <link rel="icon" href="{% static 'Black_Icon.png' %}" sizes="16x16">
+    <link rel="stylesheet" type="text/css" href="{% static 'queries/homestyle.css' %}" />
+    <link href='https://fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+
+    <div id="HomePageHeaderBox">
+        <a href="/">
+            <img src="{% static "Icon.png" %}" style="display: inline; width: 90; height: 100; position: relative; top: 10px; left: 50px;"/>
+        </a>
+        <h1 id="HomePageHeader">About DFT Benchmarking</h1>
+        <div id="Menu">
+            <a class="MenuLink" href="/">Home</a>
+            <a class="MenuLink" href="/about_nist">About</a>
+            <a class="MenuLink" href="/docs">Docs</a>
+            <a class="MenuLink" href="/contact">Contact</a>
+        </div>
+    </div>
+
+    <p style="font-size: 28px; position: relative; top: 0px; left: 50px; margin-right: 50px;">
+        This site is hosted and managed by the Hennig group at the University of Florida and is a result of a collaboration between <br> NIST and the Hennig group at the University of Florida and has been partially funded through the <br>  <a href="https://mgi.nist.gov/dft-benchmarking" style="font-size: 28px; color: #0000FF">Materials Genome Initiative for DFT Benchmarking</a>. <br> All content is available for public use. If you use our data in your research, we ask that you cite <a href="http://www.sciencedirect.com/science/article/pii/S0927025616302440" style="color: #0000FF; font-size: 28px">MPInterfaces</a> which was used in the high throughput generation of the data.
+        <ul style="font-size: 24px; position: relative; top: 0px; left: 50px; margin-right: 50px;">
+            <li>The VASP data in this site was computed at UF's supercomputing facitilies of HiperGator <br> using <a href="http://www.sciencedirect.com/science/article/pii/S0927025616302440">MPInterfaces</a> which is a high throughput Python framework developed <br> by the Hennig group for the setup, computation and analysis of materials interfaces and <a href="https://materialsweb.org" style="color: #0000FF">2D materials</a></li>
+            <li>The Dmol3 and Quantum Espresso data have been computed at NIST using in house high throughput capabilities</li>
+            <li>The statistical tools implemented in this website are apps developed using the <br> <a href="http://shiny.rstudio.com" style="color: #0000FF">Shiny by R studio</a> which is a web framework that makes use of the powerful R language specialized in data analysis in computing.</li>
+            <li>The user interaction with the database to crossfilter the data based on the user interface is based on a REST API <br> run through the Python Flask app <a href="https://github.com/usnistgov/dft-crossfilter" style="color: #0000FF">DFT Crossfilter</a> which is under development <br> that interacts with a secure MongoDB database hosted by the Hennig group</li>
+            <li>This work was supported by NIST under grant 00095176 and by NSF under the grants DMR-1542776 and ACI-1440547 </li>
+        </ul>
+    </p>
+    <p style="font-size: 28px; position: relative; top: 0px; left: 50px; margin-right: 50px;">
+        Contributors:
+        <ul style="font-size: 24px; position: relative; top: 0px; left: 50px; margin-right: 50px;">
+            <li>Joshua J. Gabriel, University of Florida</li>
+            <li>Faical Yannick Congo, National Institute of Standards and Technology</li>
+            <li>Michael Ashton, University of Florida</li>
+            <li>Richard G. Hennig, University of Florida</li>
+            <li>Thomas Allison, National Institute of Standards and Technology</li>
+            <li>Francesca Tavazza, National Institute of Standards and Technology</li>
+        </ul>
+    </p>
+
+    <div id="BottomBlock"
+    style="background-color: #454343; color: white; position: absolute; top: 940px; height: 300px; width: 100%;">
+       <p style="position: relative; top: 100px; left: 50px; font-size: 32px; width: 700px"> powered by<a href="https://github.com/henniggroup/ MPInterfaces" style="font-size: 32px; color: #fcb040;">MPInterfaces</a> and <a href="https://github.com/materialsproject/pymatgen" style="font-size: 32px; color: #fcb040;">Pymatgen</a> </p>
+       <img src="{% static "MGI.png" %}" style="width: 40%; position: relative; top: -50px; left: 700px"/>
+    </div>
+
+
+</body>
