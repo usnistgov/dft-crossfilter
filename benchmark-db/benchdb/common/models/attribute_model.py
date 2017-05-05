@@ -3,9 +3,9 @@ from ..core import db
 import json
 from bson import ObjectId
           
-class ColModel(db.Document):
+class Attribute(db.Document):
     created_at = db.DateTimeField(default=datetime.datetime.utcnow())
-    column = db.StringField()
+    name = db.StringField()
     values = db.ListField()
 
     def clone(self):
@@ -15,7 +15,7 @@ class ColModel(db.Document):
         self.id = ObjectId()
 
     def info(self):
-        data = {'column':self.column, 'values':self.values}
+        data = {'name':self.name, 'values':self.values}
         return data
 
     def to_json(self):

@@ -4,9 +4,8 @@ from flask.ext.api import status
 import flask as fk
 
 from api import app, API_URL, crossdomain, api_response
-from benchdb.common.models import RowModel
-from benchdb.common.models import ColModel
-from benchdb.common.models import DescModel
+from benchdb.common.models import Row
+from benchdb.common.models import Attribute
 
 import mimetypes
 import json
@@ -276,5 +275,49 @@ def query_row_all():
         for rw in _rws:
             rws.append(rw.info())
         return api_response(200, 'Rows values', rws)
+    else:
+        return api_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
+
+@app.route(API_URL + '/attributes', methods=['GET','POST','PUT','UPDATE','DELETE'])
+@crossdomain(origin='*')
+def attributes():
+    if fk.request.method == 'GET':
+        attrs = Attribute.objects()
+        data = {}
+        for attr in attrs:
+            data[attr.name] = attr.values
+        return api_response(200, 'Overall attributes', data)
+    else:
+        return api_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')
+
+@app.route(API_URL + '/query', methods=['GET','POST','PUT','UPDATE','DELETE'])
+@crossdomain(origin='*')
+def query():
+    if fk.request.method == 'POST':
+        if fk.request.data:
+            data = json.loads(fk.request.data)
+            code = data.get("code", None)
+            exchange = data.get("exchange", None)
+            structure = data.get("structure", None)
+            element = data.get("element", None)
+            property = data.get("property", None)
+            data = []
+            for row in Row.objects:
+                include = True
+                if code:
+                    incluce = include & (row.code == code)
+                if exchange:
+                    incluce = include & (row.exchange == exchange)
+                if structure:
+                    incluce = include & (row.structure == structure)
+                if element:
+                    incluce = include & (row.element == element)
+                if property:
+                    incluce = include & (row.property == property)
+                if include:
+                    data.append(row.info())
+            return api_response(200, 'Filtered rows', data)
+        else:
+            return api_response(200, 'All rows', [row.info() for row in Row.objects()])
     else:
         return api_response(405, 'Method not allowed', 'This endpoint supports only a GET method.')

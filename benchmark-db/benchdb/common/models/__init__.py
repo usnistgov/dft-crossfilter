@@ -1,5 +1,5 @@
 # Models module
-from .row_model import RowModel
-from .col_model import ColModel
+from .row_model import Row
+from .attribute_model import Attribute
 from .desc_model import DescModel
 
