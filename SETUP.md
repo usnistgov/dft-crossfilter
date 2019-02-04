@@ -92,3 +92,5 @@ bokeh visualization server:
     $ python bokeh/bokeh-server --script server.py
 
 Finally, in a browser go to: [Dft-Crossfilter Frontend](http://127.0.0.1:5006/bokeh/benchmark/).
+
+Refer to [Usage](APP_USAGE.md) for a walkthrough of the usage workflow of this tool.
