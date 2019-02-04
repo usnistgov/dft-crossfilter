@@ -5,7 +5,7 @@
          class="inline"/>
 </p>
 
-# DFT-CROSSFILTER
+# Overview
 
 The Dft-Crossfiltering is a web platform that provides crossfiltering capabilities to users.
 The aim of this platform is to support a dft benchmark data exposed to collaborators.
