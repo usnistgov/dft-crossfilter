@@ -12,6 +12,6 @@ Nose==1.3.4
 Werkzeug==0.9.6
 itsdangerous==0.24
 #wsgiref==0.1.2
-Requests==2.4.1
+Requests>=2.20.0
 hurry.filesize == 0.9
 #python-daemon==2.0.1
