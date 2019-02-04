@@ -1,5 +1,5 @@
 Docopt==0.6.2
-Flask==0.10.1
+Flask>=0.12.3
 Flask-Api==0.6.2
 Flask-Mongoengine==0.7.1
 Flask-Wtf==0.11
