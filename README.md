@@ -1,3 +1,10 @@
+<p align="center">
+    <img src="https://rawgit.com/usnistgov/dft-crossfilter/master/francesca_dft.png"
+         height="240"
+         alt="DFT Architecture"
+         class="inline"/>
+</p>
+
 # DFT-CROSSFILTER
 
 The Dft-Crossfiltering is a web platform that provides crossfiltering capabilities to users.
