@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="hhttps://raw.githubusercontent.com/usnistgov/dft-crossfilter/master/francesca_dft.png"
+    <img src="https://raw.githubusercontent.com/usnistgov/dft-crossfilter/master/francesca_dft.png"
          height="240"
          alt="DFT Architecture"
          class="inline"/>
