@@ -30,7 +30,6 @@ it on your system. Then start it. In ubuntu you can do so by typing:
 
     $ sudo service mongodb start
 
-
 At this point you should have a mongodb instance running.
 
 ## The api setup
@@ -56,7 +55,7 @@ To test it out go to [Data description dictionnary](http://0.0.0.0:7000/bench/de
     $ conda install bokeh
     $ cd benchmark-view
     $ conda install -c r r-essentials
-    $ R 
+    $ R
     $ > install.packages('minpack.lm')
     close R
     $ bokeh serve crossfilter_app --show
@@ -85,6 +84,7 @@ installed. When asked, select the full install with the option:
     $ cd ..
     $ sudo python setup.py install --build_js
     $ cd ..
+
 If an error occurs we recommand you removing bokehjs/nodes_modules and bokehjs/build.
 Now that we have bokeh built with the crossfilter module we can now run our
 bokeh visualization server:

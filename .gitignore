@@ -94,3 +94,5 @@ builds/hosts.aws
 benchmark-api/config.py
 
 test_data.csv
+
+.DS_Store

@@ -1,4 +1,4 @@
-Crossfiltering user interactive workflow:
+# Crossfiltering user interactive workflow
 
 1. Looks at the periodic table and structure widget
 
