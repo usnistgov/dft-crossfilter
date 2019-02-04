@@ -1,6 +1,6 @@
 <p align="center">
     <img src="https://raw.githubusercontent.com/usnistgov/dft-crossfilter/master/francesca_dft.png"
-         height="240"
+         height="500"
          alt="DFT Architecture"
          class="inline"/>
 </p>
